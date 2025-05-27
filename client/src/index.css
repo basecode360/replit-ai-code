@@ -1,0 +1,154 @@
+/* Ensure fonts are preloaded */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 98%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 203 86% 32%; /* Navy blue */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 74 31% 22%; /* Army green */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 42 77% 52%; /* Gold */
+  --accent-foreground: 20 14.3% 4.1%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 203 86% 32%;
+  --radius: 0.5rem;
+  
+  /* Chart Colors */
+  --chart-1: 203 86% 32%;
+  --chart-2: 74 31% 22%;
+  --chart-3: 42 77% 52%;
+  --chart-4: 0 84.2% 60.2%;
+  --chart-5: 220 14% 54%;
+  
+  /* Sidebar Colors */
+  --sidebar-background: 74 31% 22%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 42 77% 52%;
+  --sidebar-primary-foreground: 20 14.3% 4.1%;
+  --sidebar-accent: 203 86% 32%;
+  --sidebar-accent-foreground: 211 100% 99%;
+  --sidebar-border: 74 22% 32%;
+  --sidebar-ring: 42 77% 52%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 203 86% 42%; /* Navy blue - darker */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 74 31% 32%; /* Army green - darker */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 42 77% 42%; /* Gold - darker */
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 203 86% 42%;
+  
+  /* Chart Colors */
+  --chart-1: 203 86% 42%;
+  --chart-2: 74 31% 32%;
+  --chart-3: 42 77% 42%;
+  --chart-4: 0 62.8% 30.6%;
+  --chart-5: 220 14% 64%;
+  
+  /* Sidebar Colors - dark mode */
+  --sidebar-background: 74 22% 18%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 42 70% 42%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 203 86% 42%;
+  --sidebar-accent-foreground: 211 100% 99%;
+  --sidebar-border: 74 22% 28%;
+  --sidebar-ring: 42 70% 42%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-condensed font-bold;
+  }
+}
+
+@layer components {
+  .font-condensed {
+    font-family: 'Roboto Condensed', 'Inter', sans-serif;
+  }
+  
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .military-card {
+    @apply bg-white shadow-md rounded-md border border-gray-200 overflow-hidden;
+  }
+  
+  .military-card-header {
+    @apply bg-primary/10 px-4 py-3 border-b border-gray-200;
+  }
+  
+  .military-label {
+    @apply text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+  
+  .step-complete {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .step-in-progress {
+    @apply bg-amber-100 text-amber-800;
+  }
+  
+  .step-pending {
+    @apply bg-gray-100 text-gray-800;
+  }
+}
+
+/* Special Styles */
+.text-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.insight-card {
+  @apply border-l-4 p-4;
+}
+
+.insight-card.info {
+  @apply bg-blue-50 border-primary;
+}
+
+.insight-card.warning {
+  @apply bg-amber-50 border-amber-500;
+}
+
+.insight-card.success {
+  @apply bg-green-50 border-green-700;
+}

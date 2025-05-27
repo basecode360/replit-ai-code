@@ -1,0 +1,1031 @@
+import type { Express, Request, Response } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import express from "express";
+import { z } from "zod";
+import { insertUserSchema, insertUnitSchema, insertEventSchema, insertAARSchema, TrainingSteps, UnitLevels, MilitaryRoles, MilitaryHierarchy } from "@shared/schema";
+import { getAccessibleUnits, getAccessibleUsers } from "./lib/permissions";
+import { nanoid } from "nanoid";
+import crypto from "crypto";
+import QRCode from "qrcode";
+import { setupAuth, isAuthenticated } from "./auth";
+
+// Helper to log audit events
+const logAudit = async (userId: number, action: string, details: any, ipAddress: string | undefined) => {
+  await storage.createAuditLog({
+    userId,
+    action,
+    details,
+    ipAddress: ipAddress || '0.0.0.0'
+  });
+};
+
+// Helper to sanitize user data (remove password)
+const sanitizeUser = (user: any) => {
+  const { password, ...sanitizedUser } = user;
+  return sanitizedUser;
+};
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Set CORS headers for Replit deployment environment
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
+    next();
+  });
+  
+  // Configure authentication middleware
+  setupAuth(app);
+  
+  // User routes
+  app.get('/api/users', isAuthenticated, async (req, res) => {
+    try {
+      const users = await getAccessibleUsers((req.user as any).id);
+      res.json(users.map(sanitizeUser));
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/users', async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if username already exists
+      const existingUser = await storage.getUserByUsername(userData.username);
+      
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+      
+      const user = await storage.createUser(userData);
+      
+      if (req.user) {
+        logAudit(
+          (req.user as any).id,
+          'create_user',
+          { userId: user.id },
+          req.ip
+        );
+      }
+      
+      res.status(201).json(sanitizeUser(user));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.get('/api/users/:id', isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      res.json(sanitizeUser(user));
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.patch('/api/users/:id', isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Only allow users to update their own profile (or admins)
+      if ((req.user as any).id !== userId && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      // Parse and validate updates
+      const updates = req.body;
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'Failed to update user' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'update_user',
+        { userId, updates },
+        req.ip
+      );
+      
+      res.json(sanitizeUser(updatedUser));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.delete('/api/users/:id', isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Check if user exists
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Only admins can delete users
+      if ((req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      const success = await storage.softDeleteUser(userId);
+      
+      if (!success) {
+        return res.status(500).json({ message: 'Failed to delete user' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'delete_user',
+        { userId },
+        req.ip
+      );
+      
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Unit routes
+  app.get('/api/units', isAuthenticated, async (req, res) => {
+    try {
+      const units = await storage.getAllUnits();
+      res.json(units);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/units', isAuthenticated, async (req, res) => {
+    try {
+      console.log("Creating unit with data:", req.body);
+      
+      // Add referral code
+      const unitData = { 
+        ...req.body, 
+        referralCode: nanoid(10)
+      };
+      
+      console.log("Unit data with referral code:", unitData);
+      
+      // Parse and validate with schema
+      const parsedData = insertUnitSchema.parse(unitData);
+      console.log("Parsed unit data:", parsedData);
+      
+      // Create the unit
+      const unit = await storage.createUnit(parsedData);
+      console.log("Created unit:", unit);
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'create_unit',
+        { unitId: unit.id },
+        req.ip
+      );
+      
+      res.status(201).json(unit);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors);
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        console.error("Unit creation error:", error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.get('/api/units/:id', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      res.json(unit);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.patch('/api/units/:id', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      // Only allow commanders and admins to update units
+      if (!['Commander', 'admin'].includes((req.user as any).role)) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      // Parse and validate updates
+      const updates = req.body;
+      const updatedUnit = await storage.updateUnit(unitId, updates);
+      
+      if (!updatedUnit) {
+        return res.status(404).json({ message: 'Failed to update unit' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'update_unit',
+        { unitId, updates },
+        req.ip
+      );
+      
+      res.json(updatedUnit);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.delete('/api/units/:id', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      
+      // Check if unit exists
+      const unit = await storage.getUnit(unitId);
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      // Only admins can delete units
+      if ((req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      const success = await storage.softDeleteUnit(unitId);
+      
+      if (!success) {
+        return res.status(500).json({ message: 'Failed to delete unit' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'delete_unit',
+        { unitId },
+        req.ip
+      );
+      
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get users in a unit
+  app.get('/api/units/:id/users', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const users = await storage.getUsersByUnit(unitId);
+      res.json(users.map(sanitizeUser));
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get subunits of a unit
+  app.get('/api/units/:id/subunits', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const subunits = await storage.getSubunits(unitId);
+      res.json(subunits);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Generate QR code for unit referral
+  app.get('/api/units/:id/qr', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.id);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const qrData = `UNIT:${unit.referralCode}`;
+      const qrCode = await QRCode.toDataURL(qrData);
+      
+      res.json({ qrCode });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Join unit using referral code
+  app.post('/api/units/join', isAuthenticated, async (req, res) => {
+    try {
+      const schema = z.object({
+        referralCode: z.string()
+      });
+      
+      const { referralCode } = schema.parse(req.body);
+      const unit = await storage.getUnitByReferralCode(referralCode);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Invalid referral code' });
+      }
+      
+      // Update user's unit
+      const updatedUser = await storage.updateUser((req.user as any).id, { unitId: unit.id });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: 'Failed to join unit' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'join_unit',
+        { unitId: unit.id, referralCode },
+        req.ip
+      );
+      
+      res.json({ success: true, unit });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  // Get accessible units based on military hierarchy
+  app.get('/api/hierarchy/accessible-units', isAuthenticated, async (req, res) => {
+    try {
+      console.log("Getting accessible units for user:", (req.user as any).id);
+      // For admin users, return all units without the complex permission checks
+      if ((req.user as any).role === 'admin') {
+        const units = await storage.getAllUnits();
+        console.log(`Admin user - returning all ${units.length} units`);
+        return res.json(units);
+      }
+      
+      const units = await getAccessibleUnits((req.user as any).id);
+      console.log(`Found ${units.length} accessible units`);
+      res.json(units);
+    } catch (error) {
+      console.error("Error getting accessible units:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get accessible users based on military hierarchy
+  app.get('/api/hierarchy/accessible-users', isAuthenticated, async (req, res) => {
+    try {
+      const users = await getAccessibleUsers((req.user as any).id);
+      res.json(users.map(sanitizeUser));
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Event routes
+  app.get('/api/events', isAuthenticated, async (req, res) => {
+    try {
+      // Get events for user's unit
+      const unitEvents = await storage.getEventsByUnit((req.user as any).unitId);
+      
+      // Get events user is participating in
+      const participatingEvents = await storage.getEventsByUserParticipation((req.user as any).id);
+      
+      // Combine and remove duplicates
+      const allEvents = [...unitEvents, ...participatingEvents];
+      const uniqueEvents = allEvents.filter((event, index, self) => 
+        index === self.findIndex(e => e.id === event.id)
+      );
+      
+      res.json(uniqueEvents);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/events', isAuthenticated, async (req, res) => {
+    try {
+      console.log("Creating event with data:", req.body);
+      
+      // Create simplified event data with proper types for storage
+      const eventData = { 
+        title: req.body.title,
+        unitId: req.body.unitId || (req.user as any).unitId,
+        createdBy: (req.user as any).id,
+        step: parseInt(req.body.step || "1"),
+        date: new Date(req.body.date),
+        location: req.body.location,
+        objectives: req.body.objectives,
+        resources: req.body.resources || "",
+        participants: Array.isArray(req.body.participants) ? req.body.participants : []
+      };
+      
+      console.log("Processed event data:", eventData);
+      
+      // Create the event directly without schema validation
+      const event = await storage.createEvent(eventData);
+      console.log("Created event:", event);
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'create_event',
+        { eventId: event.id },
+        req.ip
+      );
+      
+      res.status(201).json(event);
+    } catch (error) {
+      console.error("Event creation error:", error);
+      res.status(500).json({ message: 'Error creating event' });
+    }
+  });
+  
+  app.get('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.patch('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      // Only allow creator or admin to update
+      if (event.createdBy !== (req.user as any).id && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      // Update the event
+      const updates = req.body;
+      const updatedEvent = await storage.updateEvent(eventId, updates);
+      
+      if (!updatedEvent) {
+        return res.status(404).json({ message: 'Failed to update event' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'update_event',
+        { eventId, updates },
+        req.ip
+      );
+      
+      res.json(updatedEvent);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.delete('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      // Only allow creator or admin to delete
+      if (event.createdBy !== (req.user as any).id && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      const success = await storage.softDeleteEvent(eventId);
+      
+      if (!success) {
+        return res.status(500).json({ message: 'Failed to delete event' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'delete_event',
+        { eventId },
+        req.ip
+      );
+      
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get events for a specific unit
+  app.get('/api/units/:unitId/events', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.unitId);
+      console.log(`Fetching events for unitId: ${unitId}`);
+      
+      // Verify unit exists
+      const unit = await storage.getUnit(unitId);
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const events = await storage.getEventsByUnit(unitId);
+      console.log(`Found ${events.length} events for unitId ${unitId}:`, events);
+      res.json(events);
+    } catch (error) {
+      console.error(`Error fetching events for unit:`, error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get participants for a specific event
+  app.get('/api/events/:eventId/participants', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      const participants = await storage.getEventParticipants(eventId);
+      res.json(participants.map(sanitizeUser));
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Add participants to an event
+  app.post('/api/events/:eventId/participants', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      // Only allow creator or admin to add participants
+      if (event.createdBy !== (req.user as any).id && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      const schema = z.object({
+        userIds: z.array(z.number())
+      });
+      
+      const { userIds } = schema.parse(req.body);
+      
+      // Verify users exist
+      for (const userId of userIds) {
+        const user = await storage.getUser(userId);
+        if (!user) {
+          return res.status(404).json({ message: `User with ID ${userId} not found` });
+        }
+      }
+      
+      const updatedEvent = await storage.addParticipantsToEvent(eventId, userIds);
+      
+      if (!updatedEvent) {
+        return res.status(404).json({ message: 'Failed to update event' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'add_participants_to_event',
+        { eventId, userIds },
+        req.ip
+      );
+      
+      res.json(updatedEvent);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        console.error('Error adding participants:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  // Add a unit to an event
+  app.post('/api/events/:eventId/units', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const event = await storage.getEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      const schema = z.object({
+        unitId: z.number()
+      });
+      
+      const { unitId } = schema.parse(req.body);
+      const unit = await storage.getUnit(unitId);
+      
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const updatedEvent = await storage.addUnitToEvent(eventId, unitId);
+      
+      if (!updatedEvent) {
+        return res.status(404).json({ message: 'Failed to update event' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'add_unit_to_event',
+        { eventId, unitId },
+        req.ip
+      );
+      
+      // Get all users in the unit to notify them if needed
+      if (event.step >= 6 && event.notifyParticipants) {
+        const unitUsers = await storage.getUsersByUnit(unitId);
+        for (const user of unitUsers) {
+          await storage.createNotification({
+            userId: user.id,
+            type: 'event_added',
+            content: `Your unit has been added to the event: ${event.title}`,
+            read: false,
+            link: `/events/${eventId}`
+          });
+        }
+      }
+      
+      res.json(updatedEvent);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  // Get pending AAR events (events that need AARs from the user)
+  app.get('/api/events/pending-aars', isAuthenticated, async (req, res) => {
+    try {
+      const pendingEvents = await storage.getPendingAAREvents((req.user as any).id);
+      res.json(pendingEvents);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // AAR routes
+  app.get('/api/aars', isAuthenticated, async (req, res) => {
+    try {
+      // Get AARs for user's unit
+      const unitAARs = await storage.getAARsByUnit((req.user as any).unitId);
+      
+      // Get AARs created by user
+      const userAARs = await storage.getAARsByUser((req.user as any).id);
+      
+      // Combine and remove duplicates
+      const allAARs = [...unitAARs, ...userAARs];
+      const uniqueAARs = allAARs.filter((aar, index, self) => 
+        index === self.findIndex(a => a.id === aar.id)
+      );
+      
+      res.json(uniqueAARs);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/aars', isAuthenticated, async (req, res) => {
+    try {
+      // Add creator and unit IDs
+      const aarData = { 
+        ...req.body, 
+        createdBy: (req.user as any).id,
+        unitId: (req.user as any).unitId
+      };
+      
+      // Parse and validate with schema
+      const parsedData = insertAARSchema.parse(aarData);
+      
+      // Verify event exists
+      const event = await storage.getEvent(parsedData.eventId);
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      // Create the AAR
+      const aar = await storage.createAAR(parsedData);
+      
+      // Update event step to next phase if currently in AAR stage
+      if (event.step === TrainingSteps.AAR) {
+        await storage.updateEvent(event.id, { step: TrainingSteps.RETRAINING });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'create_aar',
+        { aarId: aar.id, eventId: parsedData.eventId },
+        req.ip
+      );
+      
+      // Notify event creator
+      await storage.createNotification({
+        userId: event.createdBy,
+        type: 'aar_submitted',
+        content: `An AAR has been submitted for event: ${event.title}`,
+        read: false,
+        link: `/aars/${aar.id}`
+      });
+      
+      res.status(201).json(aar);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.get('/api/aars/:id', isAuthenticated, async (req, res) => {
+    try {
+      const aarId = parseInt(req.params.id);
+      const aar = await storage.getAAR(aarId);
+      
+      if (!aar) {
+        return res.status(404).json({ message: 'AAR not found' });
+      }
+      
+      res.json(aar);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.patch('/api/aars/:id', isAuthenticated, async (req, res) => {
+    try {
+      const aarId = parseInt(req.params.id);
+      const aar = await storage.getAAR(aarId);
+      
+      if (!aar) {
+        return res.status(404).json({ message: 'AAR not found' });
+      }
+      
+      // Only allow creator or admin to update
+      if (aar.createdBy !== (req.user as any).id && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      // Update the AAR
+      const updates = req.body;
+      const updatedAAR = await storage.updateAAR(aarId, updates);
+      
+      if (!updatedAAR) {
+        return res.status(404).json({ message: 'Failed to update AAR' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'update_aar',
+        { aarId, updates },
+        req.ip
+      );
+      
+      res.json(updatedAAR);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  });
+  
+  app.delete('/api/aars/:id', isAuthenticated, async (req, res) => {
+    try {
+      const aarId = parseInt(req.params.id);
+      const aar = await storage.getAAR(aarId);
+      
+      if (!aar) {
+        return res.status(404).json({ message: 'AAR not found' });
+      }
+      
+      // Only allow creator or admin to delete
+      if (aar.createdBy !== (req.user as any).id && (req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      const success = await storage.softDeleteAAR(aarId);
+      
+      if (!success) {
+        return res.status(500).json({ message: 'Failed to delete AAR' });
+      }
+      
+      // Log the action
+      logAudit(
+        (req.user as any).id,
+        'delete_aar',
+        { aarId },
+        req.ip
+      );
+      
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get AARs for a specific event
+  app.get('/api/events/:eventId/aars', isAuthenticated, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      
+      // Verify event exists
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      const aars = await storage.getAARsByEvent(eventId);
+      res.json(aars);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Get AARs for a specific unit
+  app.get('/api/units/:unitId/aars', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.unitId);
+      console.log(`Fetching AARs for unitId: ${unitId}`);
+      
+      // Verify unit exists
+      const unit = await storage.getUnit(unitId);
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const aars = await storage.getAARsByUnit(unitId);
+      console.log(`Found AARs for unitId ${unitId} :`, aars);
+      res.json(aars);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Venice AI analysis for a unit
+  app.get('/api/units/:unitId/analysis', isAuthenticated, async (req, res) => {
+    try {
+      const unitId = parseInt(req.params.unitId);
+      
+      // Verify unit exists
+      const unit = await storage.getUnit(unitId);
+      if (!unit) {
+        return res.status(404).json({ message: 'Unit not found' });
+      }
+      
+      const analysis = await storage.generateVeniceAnalysis(unitId);
+      res.json(analysis);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Audit log routes (admin only)
+  app.get('/api/audit-logs', isAuthenticated, async (req, res) => {
+    try {
+      // Only admins can access audit logs
+      if ((req.user as any).role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      
+      let userId = undefined;
+      let startDate = undefined;
+      let endDate = undefined;
+      
+      // Parse query parameters
+      if (req.query.userId) {
+        userId = parseInt(req.query.userId as string);
+      }
+      
+      if (req.query.startDate) {
+        startDate = new Date(req.query.startDate as string);
+      }
+      
+      if (req.query.endDate) {
+        endDate = new Date(req.query.endDate as string);
+      }
+      
+      const logs = await storage.getAuditLogs(userId, startDate, endDate);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Notification routes
+  app.get('/api/notifications', isAuthenticated, async (req, res) => {
+    try {
+      const notifications = await storage.getNotificationsForUser((req.user as any).id);
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/notifications/:id/read', isAuthenticated, async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      const success = await storage.markNotificationAsRead(notificationId);
+      
+      if (!success) {
+        return res.status(404).json({ message: 'Notification not found' });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // HTTP server
+  const httpServer = createServer(app);
+  
+  return httpServer;
+}

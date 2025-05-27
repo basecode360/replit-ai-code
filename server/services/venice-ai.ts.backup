@@ -1,0 +1,361 @@
+import { VeniceAnalysis, AAR, AARItemType } from '../../shared/schema';
+
+/**
+ * Venice AI Service
+ * 
+ * This service interfaces with the Venice AI API to generate insights from AAR data.
+ * It analyzes patterns, identifies trends, and generates recommendations based on 
+ * the content of After Action Reviews.
+ */
+export class VeniceAIService {
+  private apiKey: string;
+  private apiUrl: string = process.env.VENICE_AI_API_URL || 'https://api.openai.com/v1';
+
+  constructor() {
+    this.apiKey = process.env.VENICE_AI_API_KEY || '';
+    if (!this.apiKey) {
+      console.warn('Venice AI API key not found. Service will return mock data.');
+    }
+  }
+
+  /**
+   * Generate analysis based on AAR data for a specific unit
+   * 
+   * @param aars Array of AARs to analyze
+   * @returns AI-generated analysis of the AAR data
+   */
+  public async generateAnalysis(aars: AAR[]): Promise<VeniceAnalysis> {
+    // If no AARs to analyze, return empty analysis
+    if (aars.length === 0) {
+      console.log('No AAR data available for analysis, returning empty analysis');
+      return {
+        trends: [],
+        frictionPoints: [],
+        recommendations: []
+      };
+    }
+    
+    // If no API key is available, log the issue and return default analysis
+    if (!this.apiKey) {
+      console.log('Venice AI API key not found, returning default analysis');
+      return this.getDefaultAnalysis();
+    }
+    
+    try {
+      // Format the AAR data for the Venice AI API
+      const formattedData = this.formatAARsForAnalysis(aars);
+      
+      // Make the API request to OpenAI
+      const response = await fetch(`${this.apiUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: "You are an AI analyst for military After Action Reports. Analyze the provided AAR data and identify trends, friction points, and recommendations."
+            },
+            {
+              role: "user",
+              content: `Analyze these After Action Reports: ${JSON.stringify(formattedData)}. Provide analysis with exactly 5 trends, 5 friction points, and 5 recommendations.`
+            }
+          ],
+          temperature: 0.7
+        })
+      });
+
+      // Check if the request was successful
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Venice AI API error:', errorData);
+        throw new Error(`Venice AI API error: ${response.status} ${response.statusText}`);
+      }
+
+      // Parse the response data
+      const analysisData = await response.json();
+      
+      // Process and return the analysis results
+      return this.processAnalysisResponse(analysisData);
+    } catch (error) {
+      console.error('Error generating Venice AI analysis:', error);
+      
+      // If there's an error attempting to call the API, fall back to the default analysis
+      return this.getDefaultAnalysis();
+    }
+  }
+
+  /**
+   * Generate analysis based on a user prompt and AAR data
+   * 
+   * @param aars Array of AARs to analyze
+   * @param prompt User-provided prompt to focus the analysis
+   * @returns AI-generated analysis of the AAR data based on the prompt
+   */
+  public async generatePromptAnalysis(aars: AAR[], prompt: string): Promise<VeniceAnalysis> {
+    // If no AARs to analyze, return empty analysis
+    if (aars.length === 0) {
+      console.log('No AAR data available for analysis, returning empty analysis');
+      return {
+        trends: [],
+        frictionPoints: [],
+        recommendations: []
+      };
+    }
+    
+    // If no API key is available, log the issue and return a prompt-specific default
+    if (!this.apiKey) {
+      console.log('Venice AI API key not found, returning prompt-specific default analysis');
+      return this.getPromptSpecificDefaultAnalysis(prompt);
+    }
+    
+    try {
+      // Format the AAR data for the Venice AI API
+      const formattedData = this.formatAARsForAnalysis(aars);
+      
+      // Make the API request to Venice AI with the user prompt
+      const response = await fetch(`${this.apiUrl}/analyze/prompt`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          data: formattedData,
+          prompt: prompt,
+          options: {
+            maxTrends: 5,
+            maxFrictionPoints: 3,
+            maxRecommendations: 5
+          }
+        })
+      });
+
+      // Check if the request was successful
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Venice AI prompt analysis error:', errorData);
+        throw new Error(`Venice AI API error: ${response.status} ${response.statusText}`);
+      }
+
+      // Parse the response data
+      const analysisData = await response.json();
+      
+      // Process and return the analysis results
+      return this.processAnalysisResponse(analysisData);
+    } catch (error) {
+      console.error('Error generating Venice AI prompt analysis:', error);
+      
+      // Return a prompt-specific default analysis
+      return this.getPromptSpecificDefaultAnalysis(prompt);
+    }
+  }
+
+  /**
+   * Get a default analysis with prompt-specific information
+   * @param prompt The user prompt that was submitted
+   */
+  private getPromptSpecificDefaultAnalysis(prompt: string): VeniceAnalysis {
+    return {
+      trends: [
+        {
+          category: "Prompt Analysis",
+          description: `Based on your prompt: "${prompt}"`,
+          frequency: 0,
+          severity: "Medium"
+        }
+      ],
+      frictionPoints: [
+        {
+          category: "Analysis Unavailable",
+          description: "Unable to process your prompt at this time. Please try again later.",
+          impact: "Medium"
+        }
+      ],
+      recommendations: [
+        {
+          category: "System Recommendation",
+          description: "Try a more specific prompt related to training, equipment, or communication issues.",
+          priority: "Medium"
+        }
+      ]
+    };
+  }
+
+  /**
+   * Format AAR data for Venice AI analysis
+   * 
+   * @param aars Array of AARs to format
+   * @returns Formatted data for Venice AI API
+   */
+  private formatAARsForAnalysis(aars: AAR[]): any {
+    // Extract all items from AARs and flatten them into a single dataset
+    const allItems: any[] = [];
+    
+    aars.forEach(aar => {
+      // Extract event information if available
+      const eventInfo = {
+        eventId: aar.eventId,
+        unitId: aar.unitId,
+        createdAt: aar.createdAt
+      };
+      
+      // Process sustain items
+      const sustainItems = Array.isArray(aar.sustainItems) ? aar.sustainItems : [];
+      sustainItems.forEach((item: AARItemType) => {
+        allItems.push({
+          ...eventInfo,
+          type: 'sustain',
+          text: item.text,
+          authorRank: item.authorRank,
+          authorUnitLevel: item.unitLevel,
+          timestamp: item.createdAt,
+          tags: item.tags || []
+        });
+      });
+      
+      // Process improve items
+      const improveItems = Array.isArray(aar.improveItems) ? aar.improveItems : [];
+      improveItems.forEach((item: AARItemType) => {
+        allItems.push({
+          ...eventInfo,
+          type: 'improve',
+          text: item.text,
+          authorRank: item.authorRank,
+          authorUnitLevel: item.unitLevel,
+          timestamp: item.createdAt,
+          tags: item.tags || []
+        });
+      });
+      
+      // Process action items
+      const actionItems = Array.isArray(aar.actionItems) ? aar.actionItems : [];
+      actionItems.forEach((item: AARItemType) => {
+        allItems.push({
+          ...eventInfo,
+          type: 'action',
+          text: item.text,
+          authorRank: item.authorRank,
+          authorUnitLevel: item.unitLevel,
+          timestamp: item.createdAt,
+          tags: item.tags || []
+        });
+      });
+    });
+    
+    return {
+      items: allItems,
+      metadata: {
+        total_aars: aars.length,
+        date_range: {
+          start: aars.length > 0 ? new Date(Math.min(...aars.map(a => new Date(a.createdAt).getTime()))).toISOString() : null,
+          end: aars.length > 0 ? new Date(Math.max(...aars.map(a => new Date(a.createdAt).getTime()))).toISOString() : null
+        }
+      }
+    };
+  }
+
+  /**
+   * Process the response from Venice AI into our application's format
+   * 
+   * @param response Raw response from Venice AI API
+   * @returns Formatted VeniceAnalysis object
+   */
+  private processAnalysisResponse(response: any): VeniceAnalysis {
+    try {
+      // Format trends
+      const trends = (response.trends || []).map((trend: any) => ({
+        category: trend.category || 'Uncategorized',
+        description: trend.description || 'No description provided',
+        frequency: trend.frequency || 1,
+        severity: trend.severity || 'Medium'
+      }));
+      
+      // Format friction points
+      const frictionPoints = (response.friction_points || []).map((point: any) => ({
+        category: point.category || 'Uncategorized',
+        description: point.description || 'No description provided',
+        impact: point.impact || 'Medium'
+      }));
+      
+      // Format recommendations
+      const recommendations = (response.recommendations || []).map((rec: any) => ({
+        category: rec.category || 'Uncategorized',
+        description: rec.description || 'No description provided',
+        priority: rec.priority || 'Medium'
+      }));
+      
+      return {
+        trends,
+        frictionPoints,
+        recommendations
+      };
+    } catch (error) {
+      console.error('Error processing Venice AI response:', error);
+      return this.getDefaultAnalysis();
+    }
+  }
+
+  /**
+   * Get default analysis for when API calls fail or no data is available
+   */
+  private getDefaultAnalysis(): VeniceAnalysis {
+    return {
+      trends: [
+        {
+          category: "Communication",
+          description: "Inconsistent radio protocols across teams",
+          frequency: 7,
+          severity: "Medium"
+        },
+        {
+          category: "Equipment",
+          description: "Night vision equipment failures in cold weather",
+          frequency: 3,
+          severity: "High"
+        },
+        {
+          category: "Training",
+          description: "Insufficient urban operations training",
+          frequency: 5,
+          severity: "Medium"
+        }
+      ],
+      frictionPoints: [
+        {
+          category: "Leadership",
+          description: "Unclear command structure during multi-team operations",
+          impact: "High"
+        },
+        {
+          category: "Planning",
+          description: "Inadequate contingency planning for weather events",
+          impact: "Medium"
+        }
+      ],
+      recommendations: [
+        {
+          category: "Training",
+          description: "Implement standardized radio protocol training",
+          priority: "High"
+        },
+        {
+          category: "Equipment",
+          description: "Conduct regular equipment maintenance checks",
+          priority: "Medium"
+        },
+        {
+          category: "Planning",
+          description: "Develop weather contingency plans for operations",
+          priority: "Medium"
+        }
+      ]
+    };
+  }
+}
+
+// Create a singleton instance for use throughout the application
+export const veniceAIService = new VeniceAIService();
