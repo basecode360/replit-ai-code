@@ -1,12 +1,14 @@
 import path from "path";
-
 import express, { type Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+console.log("DATABASE_URL =", process.env.DATABASE_URL);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -60,19 +62,24 @@ app.use((req, res, next) => {
 
     // Handle client-side routing by serving index.html for non-API routes
     app.get("*", (req, res) => {
-      if (!req.path.startsWith('/api')) {
-        res.sendFile(path.resolve(import.meta.dirname, "..", "dist/index.html"));
+      if (!req.path.startsWith("/api")) {
+        res.sendFile(
+          path.resolve(import.meta.dirname, "..", "dist/index.html")
+        );
       }
     });
   }
 
   // ALWAYS serve the app on port 5000
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port} in ${app.get("env")} mode`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port} in ${app.get("env")} mode`);
+    }
+  );
 })();

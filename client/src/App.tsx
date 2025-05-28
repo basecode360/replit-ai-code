@@ -29,10 +29,10 @@ import SubscribeBasic from "@/pages/subscribe/basic";
 import SubscribePremium from "@/pages/subscribe/premium";
 import Layout from "@/components/layout/Layout";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Import demo pages
-import DemoWelcome from "@/pages/demo/DemoWelcome";
+import DemoWelcome from "./pages/demo/DemoWelcome";
 import DemoEvents from "@/pages/demo/DemoEvents";
 import DemoAARs from "@/pages/demo/DemoAARs";
 import DemoAnalysis from "@/pages/demo/DemoAnalysis";
@@ -47,44 +47,44 @@ function Router() {
       <Route path="/demo">
         <DemoWelcome />
       </Route>
-      
+
       <Route path="/demo/events">
         <DemoEvents />
       </Route>
-      
+
       <Route path="/demo/aars">
         <DemoAARs />
       </Route>
-      
+
       <Route path="/demo/analysis">
         <DemoAnalysis />
       </Route>
-      
+
       <Route path="/demo/custom-prompt">
         <DemoCustomPrompt />
       </Route>
-      
+
       <Route path="/demo/profile">
         <DemoProfile />
       </Route>
-      
+
       <Route path="/demo/signup">
         <DemoSignup />
       </Route>
-      
+
       {/* Public routes */}
       <Route path="/pricing">
         <PricingPage />
       </Route>
-      
+
       <Route path="/subscribe">
         <SubscribeIndex />
       </Route>
-      
+
       <Route path="/subscribe/basic">
         <SubscribeBasic />
       </Route>
-      
+
       <Route path="/subscribe/premium">
         <SubscribePremium />
       </Route>
@@ -93,7 +93,7 @@ function Router() {
       <Route path="/auth">
         <AuthPage />
       </Route>
-      
+
       <Route path="/">
         <ProtectedRoute>
           <Layout>
@@ -101,7 +101,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/events">
         <ProtectedRoute>
           <Layout>
@@ -109,7 +109,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/events/admin">
         <ProtectedRoute>
           <Layout>
@@ -117,7 +117,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/events/create">
         <ProtectedRoute>
           <Layout>
@@ -125,7 +125,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/events/:id">
         <ProtectedRoute>
           <Layout>
@@ -133,7 +133,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/aars/dashboard">
         <ProtectedRoute>
           <Layout>
@@ -141,7 +141,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/aars/admin">
         <ProtectedRoute>
           <Layout>
@@ -149,7 +149,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/aars/event/:eventId">
         <ProtectedRoute>
           <Layout>
@@ -157,7 +157,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       {/* Redirect /aars to the AAR Dashboard */}
       <Route path="/aars">
         <ProtectedRoute>
@@ -166,7 +166,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/aars/:id">
         <ProtectedRoute>
           <Layout>
@@ -174,7 +174,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/submit-aar/:eventId">
         <ProtectedRoute>
           <Layout>
@@ -182,7 +182,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/units">
         <ProtectedRoute>
           <Layout>
@@ -190,7 +190,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/unit-roster">
         <ProtectedRoute>
           <Layout>
@@ -198,7 +198,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/users/:id">
         <ProtectedRoute>
           <Layout>
@@ -206,7 +206,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/analytics">
         <ProtectedRoute>
           <Layout>
@@ -214,7 +214,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/settings">
         <ProtectedRoute>
           <Layout>
@@ -222,7 +222,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route path="/security-logs">
         <ProtectedRoute>
           <Layout>
@@ -230,7 +230,7 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
-      
+
       <Route>
         <NotFound />
       </Route>
