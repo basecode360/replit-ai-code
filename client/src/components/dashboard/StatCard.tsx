@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardFooter } from "./components/ui/card";
+import { cn } from "./lib/utils";
 
 interface StatCardProps {
   title: string;

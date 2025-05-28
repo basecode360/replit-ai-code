@@ -1,15 +1,15 @@
-import { useAuth } from "@/lib/auth-provider";
-import UserChainOfCommand from "@/components/users/UserChainOfCommand";
+import { useAuth } from "../lib/auth-provider"
+import UserChainOfCommand from "../components/users/UserChainOfCommand";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "../lib/queryClient";
+import { queryClient } from "../lib/queryClient";
+import { useToast } from "../hooks/use-toast";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,10 +18,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+} from "../components/ui/form";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import { Switch } from "../components/ui/switch";
 import {
   Card,
   CardContent,
@@ -29,16 +29,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { useTheme } from "@/components/ui/theme-provider";
+} from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { useTheme } from "../components/ui/theme-provider";
 import { AlertCircle, Check } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -46,14 +41,16 @@ const profileSchema = z.object({
   bio: z.string().optional(),
 });
 
-const securitySchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const securitySchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type SecurityFormValues = z.infer<typeof securitySchema>;
@@ -185,7 +182,10 @@ export default function Settings() {
             </CardHeader>
             <CardContent>
               <Form {...profileForm}>
-                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+                <form
+                  onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                  className="space-y-6"
+                >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormField
                       control={profileForm.control}
@@ -208,7 +208,10 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>Rank</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your military rank" {...field} />
+                            <Input
+                              placeholder="Your military rank"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -238,7 +241,8 @@ export default function Settings() {
                     <div className="flex-1">
                       <h3 className="text-sm font-medium">Read-only Fields</h3>
                       <p className="text-sm text-muted-foreground">
-                        Some information can only be changed by your unit administrator.
+                        Some information can only be changed by your unit
+                        administrator.
                       </p>
                     </div>
                   </div>
@@ -260,7 +264,9 @@ export default function Settings() {
                       disabled={updateProfile.isPending}
                       className="ml-auto"
                     >
-                      {updateProfile.isPending ? "Updating..." : "Update Profile"}
+                      {updateProfile.isPending
+                        ? "Updating..."
+                        : "Update Profile"}
                     </Button>
                   </CardFooter>
                 </form>
@@ -275,7 +281,8 @@ export default function Settings() {
             <CardHeader>
               <CardTitle>Military Hierarchy</CardTitle>
               <CardDescription>
-                View your position in the chain of command and your military relationships
+                View your position in the chain of command and your military
+                relationships
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -295,7 +302,10 @@ export default function Settings() {
             </CardHeader>
             <CardContent>
               <Form {...securityForm}>
-                <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-6">
+                <form
+                  onSubmit={securityForm.handleSubmit(onSecuritySubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={securityForm.control}
                     name="currentPassword"
@@ -303,7 +313,11 @@ export default function Settings() {
                       <FormItem>
                         <FormLabel>Current Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Enter current password" {...field} />
+                          <Input
+                            type="password"
+                            placeholder="Enter current password"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -318,7 +332,11 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>New Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Enter new password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Enter new password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -332,7 +350,11 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>Confirm Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Confirm new password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Confirm new password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -342,9 +364,12 @@ export default function Settings() {
 
                   <div className="flex items-center p-4 bg-muted/50 rounded-md">
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium">Password Requirements</h3>
+                      <h3 className="text-sm font-medium">
+                        Password Requirements
+                      </h3>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Passwords must be at least 6 characters long and include a mix of letters and numbers.
+                        Passwords must be at least 6 characters long and include
+                        a mix of letters and numbers.
                       </p>
                     </div>
                   </div>
@@ -355,7 +380,9 @@ export default function Settings() {
                       disabled={updatePassword.isPending}
                       className="ml-auto"
                     >
-                      {updatePassword.isPending ? "Updating..." : "Update Password"}
+                      {updatePassword.isPending
+                        ? "Updating..."
+                        : "Update Password"}
                     </Button>
                   </CardFooter>
                 </form>
@@ -404,9 +431,15 @@ export default function Settings() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Text Size</label>
                 <div className="grid grid-cols-3 gap-4">
-                  <Button variant="outline" className="justify-start">Small</Button>
-                  <Button variant="default" className="justify-start">Medium</Button>
-                  <Button variant="outline" className="justify-start">Large</Button>
+                  <Button variant="outline" className="justify-start">
+                    Small
+                  </Button>
+                  <Button variant="default" className="justify-start">
+                    Medium
+                  </Button>
+                  <Button variant="outline" className="justify-start">
+                    Large
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -439,24 +472,28 @@ export default function Settings() {
 
                 <div className="space-y-4">
                   <h4 className="text-sm font-medium">Notification Types</h4>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="text-sm">New events assigned to you</div>
                     <Switch defaultChecked disabled={!notificationsEnabled} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
-                    <div className="text-sm">AAR submissions for your events</div>
+                    <div className="text-sm">
+                      AAR submissions for your events
+                    </div>
                     <Switch defaultChecked disabled={!notificationsEnabled} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="text-sm">Training step changes</div>
                     <Switch defaultChecked disabled={!notificationsEnabled} />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
-                    <div className="text-sm">Venice AI insights and recommendations</div>
+                    <div className="text-sm">
+                      Venice AI insights and recommendations
+                    </div>
                     <Switch defaultChecked disabled={!notificationsEnabled} />
                   </div>
                 </div>

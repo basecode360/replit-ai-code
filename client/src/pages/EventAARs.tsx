@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Helmet } from "react-helmet";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "../hooks/use-toast"
 import { formatDistanceToNow } from "date-fns";
 
 import {
@@ -12,7 +12,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../components/ui/card";
 import {
   Table,
   TableBody,
@@ -20,9 +20,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from "../components/ui/table";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
 import {
   Calendar,
   Users,
@@ -30,9 +30,9 @@ import {
   ArrowLeft,
   FileText,
   User,
-  BrainCircuit
+  BrainCircuit,
 } from "lucide-react";
-import { AIAnalysisDialog } from "@/components/AIAnalysisDialog";
+import { AIAnalysisDialog } from "../components/AIAnalysisDialog";
 
 // Interface for AAR items with metadata
 interface AARItem {
@@ -122,11 +122,11 @@ export default function EventAARs() {
 
   // Get user data for displaying creator names
   const { data: users, isLoading: isUsersLoading } = useQuery<User[]>({
-    queryKey: ['/api/users'],
+    queryKey: ["/api/users"],
     queryFn: async () => {
-      const res = await fetch('/api/users');
+      const res = await fetch("/api/users");
       if (!res.ok) {
-        throw new Error('Failed to fetch users');
+        throw new Error("Failed to fetch users");
       }
       return await res.json();
     },
@@ -134,11 +134,11 @@ export default function EventAARs() {
 
   // Get unit data for displaying unit names
   const { data: units, isLoading: isUnitsLoading } = useQuery<Unit[]>({
-    queryKey: ['/api/hierarchy/accessible-units'],
+    queryKey: ["/api/hierarchy/accessible-units"],
     queryFn: async () => {
-      const res = await fetch('/api/hierarchy/accessible-units');
+      const res = await fetch("/api/hierarchy/accessible-units");
       if (!res.ok) {
-        throw new Error('Failed to fetch units');
+        throw new Error("Failed to fetch units");
       }
       return await res.json();
     },
@@ -146,41 +146,42 @@ export default function EventAARs() {
 
   const getAARMetadata = (aar: AAR) => {
     // Extract planned and actual outcomes from AAR metadata item
-    const metadataItem = aar.sustainItems?.find((item: AARItem) => 
-      item.tags && item.tags.includes('aar_metadata')
+    const metadataItem = aar.sustainItems?.find(
+      (item: AARItem) => item.tags && item.tags.includes("aar_metadata")
     );
-    
+
     let plannedOutcome = null;
     let actualOutcome = null;
     let tempRole = null;
-    
+
     if (metadataItem && metadataItem.text) {
       const text = metadataItem.text;
       const plannedMatch = /Planned outcome: (.*?)(\n|$)/.exec(text);
       const actualMatch = /Actual outcome: (.*?)(\n|$)/.exec(text);
       const tempRoleMatch = /Temporary duty position: (.*?)(\n|$)/.exec(text);
-      
+
       plannedOutcome = plannedMatch && plannedMatch[1] ? plannedMatch[1] : null;
       actualOutcome = actualMatch && actualMatch[1] ? actualMatch[1] : null;
       tempRole = tempRoleMatch && tempRoleMatch[1] ? tempRoleMatch[1] : null;
     }
-    
+
     return { plannedOutcome, actualOutcome, tempRole };
   };
 
   const getCreatorName = (userId: number) => {
     if (!users) return "Unknown";
-    const user = users.find(u => u.id === userId);
+    const user = users.find((u) => u.id === userId);
     return user ? `${user.rank} ${user.name}` : "Unknown";
   };
 
   const getUnitName = (unitId: number) => {
     if (!units) return "Unknown";
-    const unit = units.find(u => u.id === unitId);
+    const unit = units.find((u) => u.id === unitId);
     return unit ? unit.name : "Unknown";
   };
 
-  const isLoading = isEventLoading || isAARsLoading || isUsersLoading || isUnitsLoading;
+  const isLoading =
+    isEventLoading || isAARsLoading || isUsersLoading || isUnitsLoading;
 
   if (isLoading) {
     return (
@@ -199,7 +200,8 @@ export default function EventAARs() {
           <CardHeader>
             <CardTitle>Event Not Found</CardTitle>
             <CardDescription>
-              The event you are looking for does not exist or you do not have access to it.
+              The event you are looking for does not exist or you do not have
+              access to it.
             </CardDescription>
           </CardHeader>
           <CardFooter>
@@ -218,8 +220,14 @@ export default function EventAARs() {
   return (
     <>
       <Helmet>
-        <title>After-Action Reviews for {event.title} - Military AAR Management System</title>
-        <meta name="description" content={`View all after-action reviews for ${event.title} training event.`} />
+        <title>
+          After-Action Reviews for {event.title} - Military AAR Management
+          System
+        </title>
+        <meta
+          name="description"
+          content={`View all after-action reviews for ${event.title} training event.`}
+        />
       </Helmet>
 
       <div className="container py-8">
@@ -239,8 +247,8 @@ export default function EventAARs() {
           </div>
           <div className="flex gap-2">
             {aars && aars.length > 0 && (
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 onClick={() => setShowAIAnalysisDialog(true)}
               >
                 <BrainCircuit className="mr-2 h-4 w-4" />
@@ -265,9 +273,7 @@ export default function EventAARs() {
         <Card>
           <CardHeader>
             <CardTitle>After-Action Reviews</CardTitle>
-            <CardDescription>
-              All AARs submitted for this event
-            </CardDescription>
+            <CardDescription>All AARs submitted for this event</CardDescription>
           </CardHeader>
           <CardContent>
             {!aars || aars.length === 0 ? (
@@ -288,10 +294,13 @@ export default function EventAARs() {
                 <TableBody>
                   {aars.map((aar) => {
                     const metadata = getAARMetadata(aar);
-                    const sustainCount = aar.sustainItems?.filter(item => !item.tags?.includes('aar_metadata'))?.length || 0;
+                    const sustainCount =
+                      aar.sustainItems?.filter(
+                        (item) => !item.tags?.includes("aar_metadata")
+                      )?.length || 0;
                     const improveCount = aar.improveItems?.length || 0;
                     const actionCount = aar.actionItems?.length || 0;
-                    
+
                     return (
                       <TableRow key={aar.id}>
                         <TableCell>
@@ -307,22 +316,30 @@ export default function EventAARs() {
                         </TableCell>
                         <TableCell>{getUnitName(aar.unitId)}</TableCell>
                         <TableCell>
-                          <span title={new Date(aar.createdAt).toLocaleString()}>
-                            {formatDistanceToNow(new Date(aar.createdAt), { addSuffix: true })}
+                          <span
+                            title={new Date(aar.createdAt).toLocaleString()}
+                          >
+                            {formatDistanceToNow(new Date(aar.createdAt), {
+                              addSuffix: true,
+                            })}
                           </span>
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Badge variant="secondary">{sustainCount} Sustain</Badge>
-                            <Badge variant="secondary">{improveCount} Improve</Badge>
-                            <Badge variant="secondary">{actionCount} Action</Badge>
+                            <Badge variant="secondary">
+                              {sustainCount} Sustain
+                            </Badge>
+                            <Badge variant="secondary">
+                              {improveCount} Improve
+                            </Badge>
+                            <Badge variant="secondary">
+                              {actionCount} Action
+                            </Badge>
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button variant="outline" size="sm" asChild>
-                            <Link href={`/aars/${aar.id}`}>
-                              View Details
-                            </Link>
+                            <Link href={`/aars/${aar.id}`}>View Details</Link>
                           </Button>
                         </TableCell>
                       </TableRow>

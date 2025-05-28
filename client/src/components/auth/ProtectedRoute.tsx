@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "../../lib/auth-provider";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,11 +12,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   // Only log for debugging
-  console.log("ProtectedRoute - Auth state:", { 
-    user: user?.username, 
-    isLoading, 
-    location, 
-    hasCheckedAuth 
+  console.log("ProtectedRoute - Auth state:", {
+    user: user?.username,
+    isLoading,
+    location,
+    hasCheckedAuth,
   });
 
   // Wait for authentication to be checked

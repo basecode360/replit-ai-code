@@ -4,12 +4,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "./lib/queryClient";
+import { queryClient } from "./lib/queryClient";
+import { useToast } from "./hooks/use-toast";
 import { format } from "date-fns";
-import { CalendarIcon, Loader2, X, Search, UserPlus, Users } from "lucide-react";
-import { useAuth } from "@/lib/auth-provider";
+import {
+  CalendarIcon,
+  Loader2,
+  X,
+  Search,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import { useAuth } from "./lib/auth-provider";
 
 // 8-Step Training Model
 const trainingSteps = [
@@ -20,7 +27,7 @@ const trainingSteps = [
   { id: 5, name: "Rehearse" },
   { id: 6, name: "Execute" },
   { id: 7, name: "Evaluate the Training" },
-  { id: 8, name: "Retrain" }
+  { id: 8, name: "Retrain" },
 ];
 
 import {
@@ -31,7 +38,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "./components/ui/form";
 
 import {
   Select,
@@ -39,74 +46,89 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "./components/ui/select";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "./components/ui/accordion";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Textarea } from "./components/ui/textarea";
+import { Checkbox } from "./components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "./components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./components/ui/popover";
+import { Calendar } from "./components/ui/calendar";
+import { cn } from "./lib/utils";
+import { Badge } from "./components/ui/badge";
 
 // Form schema for event creation
-const eventFormSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  executionDate: z.date({
-    required_error: "Execution date is required",
-  }),
-  endDate: z.date().optional(),
-  isMultiDayEvent: z.boolean().default(false),
-  receivedDate: z.date({
-    required_error: "Date task was received is required",
-  }),
-  location: z.string().min(3, "Location must be at least 3 characters"),
-  objectives: z.string().min(10, "Objectives must be at least 10 characters"),
-  missionStatement: z.string().optional(),
-  conceptOfOperation: z.string().optional(),
-  resources: z.string().optional(),
-  participants: z.string().optional(),
-  participatingUnits: z.string().optional(),
-  notifyParticipants: z.boolean().default(true),
-  eventType: z.string().default("training"),
-  trainingEchelon: z.string().default("squad"), // Training echelon (squad, platoon, company, etc.)
-  trainingElements: z.string().optional(), // Specific elements being trained
-  attachments: z.any().optional(), // For file attachments
-  planningNotes: z.string().optional(),
-  step1Date: z.date().optional(),
-  step2Date: z.date().optional(),
-  step3Date: z.date().optional(),
-  step4Date: z.date().optional(),
-  step5Date: z.date().optional(),
-  step6Date: z.date().optional(),
-  step7Date: z.date().optional(),
-  step8Date: z.date().optional(),
-  step1Notes: z.string().optional(),
-  step2Notes: z.string().optional(),
-  step3Notes: z.string().optional(), 
-  step4Notes: z.string().optional(),
-  step5Notes: z.string().optional(),
-  step6Notes: z.string().optional(),
-  step7Notes: z.string().optional(),
-  step8Notes: z.string().optional(),
-})
-.refine(data => !data.isMultiDayEvent || (data.isMultiDayEvent && data.endDate), {
-  message: "End date is required for multi-day events",
-  path: ["endDate"],
-})
-.refine(data => !data.isMultiDayEvent || (data.isMultiDayEvent && data.endDate && data.endDate >= data.executionDate), {
-  message: "End date must be after or the same as the start date",
-  path: ["endDate"],
-});
+const eventFormSchema = z
+  .object({
+    title: z.string().min(3, "Title must be at least 3 characters"),
+    executionDate: z.date({
+      required_error: "Execution date is required",
+    }),
+    endDate: z.date().optional(),
+    isMultiDayEvent: z.boolean().default(false),
+    receivedDate: z.date({
+      required_error: "Date task was received is required",
+    }),
+    location: z.string().min(3, "Location must be at least 3 characters"),
+    objectives: z.string().min(10, "Objectives must be at least 10 characters"),
+    missionStatement: z.string().optional(),
+    conceptOfOperation: z.string().optional(),
+    resources: z.string().optional(),
+    participants: z.string().optional(),
+    participatingUnits: z.string().optional(),
+    notifyParticipants: z.boolean().default(true),
+    eventType: z.string().default("training"),
+    trainingEchelon: z.string().default("squad"), // Training echelon (squad, platoon, company, etc.)
+    trainingElements: z.string().optional(), // Specific elements being trained
+    attachments: z.any().optional(), // For file attachments
+    planningNotes: z.string().optional(),
+    step1Date: z.date().optional(),
+    step2Date: z.date().optional(),
+    step3Date: z.date().optional(),
+    step4Date: z.date().optional(),
+    step5Date: z.date().optional(),
+    step6Date: z.date().optional(),
+    step7Date: z.date().optional(),
+    step8Date: z.date().optional(),
+    step1Notes: z.string().optional(),
+    step2Notes: z.string().optional(),
+    step3Notes: z.string().optional(),
+    step4Notes: z.string().optional(),
+    step5Notes: z.string().optional(),
+    step6Notes: z.string().optional(),
+    step7Notes: z.string().optional(),
+    step8Notes: z.string().optional(),
+  })
+  .refine(
+    (data) => !data.isMultiDayEvent || (data.isMultiDayEvent && data.endDate),
+    {
+      message: "End date is required for multi-day events",
+      path: ["endDate"],
+    }
+  )
+  .refine(
+    (data) =>
+      !data.isMultiDayEvent ||
+      (data.isMultiDayEvent &&
+        data.endDate &&
+        data.endDate >= data.executionDate),
+    {
+      message: "End date must be after or the same as the start date",
+      path: ["endDate"],
+    }
+  );
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
 
@@ -117,8 +139,12 @@ export default function EventForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [searchParticipant, setSearchParticipant] = useState("");
   const [searchUnit, setSearchUnit] = useState("");
-  const [selectedParticipants, setSelectedParticipants] = useState<{id: number, name: string}[]>([]);
-  const [selectedUnits, setSelectedUnits] = useState<{id: number, name: string, unitLevel?: string}[]>([]);
+  const [selectedParticipants, setSelectedParticipants] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [selectedUnits, setSelectedUnits] = useState<
+    { id: number; name: string; unitLevel?: string }[]
+  >([]);
   const [showParticipantResults, setShowParticipantResults] = useState(false);
   const [showUnitResults, setShowUnitResults] = useState(false);
 
@@ -152,136 +178,164 @@ export default function EventForm() {
     resolver: zodResolver(eventFormSchema),
     defaultValues,
   });
-  
+
   // Set up effect to auto-populate Step 6 date with execution date
   useEffect(() => {
     const executionDate = form.getValues("executionDate");
     if (executionDate) {
       form.setValue("step6Date", executionDate);
     }
-    
+
     // Set up subscription to execution date changes
     const subscription = form.watch((value, { name }) => {
       if (name === "executionDate" && value.executionDate) {
         form.setValue("step6Date", value.executionDate);
       }
     });
-    
+
     return () => subscription.unsubscribe();
   }, [form]);
 
   // Fetch users for autocomplete
   const { data: usersData = [] } = useQuery({
-    queryKey: ['/api/users'],
+    queryKey: ["/api/users"],
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   // Fetch units for autocomplete - get accessible units to ensure we get them all
   const { data: unitsData = [] } = useQuery({
-    queryKey: ['/api/hierarchy/accessible-units'],
+    queryKey: ["/api/hierarchy/accessible-units"],
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   // Filter users based on search text
-  const filteredUsers = searchParticipant 
-    ? (usersData as any[]).filter((user: any) => 
-        (user.name && user.name.toLowerCase().includes(searchParticipant.toLowerCase())) ||
-        (user.username && user.username.toLowerCase().includes(searchParticipant.toLowerCase())) ||
-        (user.rank && user.rank.toLowerCase().includes(searchParticipant.toLowerCase()))
-      ).slice(0, 5) // Limit to 5 suggestions
+  const filteredUsers = searchParticipant
+    ? (usersData as any[])
+        .filter(
+          (user: any) =>
+            (user.name &&
+              user.name
+                .toLowerCase()
+                .includes(searchParticipant.toLowerCase())) ||
+            (user.username &&
+              user.username
+                .toLowerCase()
+                .includes(searchParticipant.toLowerCase())) ||
+            (user.rank &&
+              user.rank.toLowerCase().includes(searchParticipant.toLowerCase()))
+        )
+        .slice(0, 5) // Limit to 5 suggestions
     : [];
-    
+
   // Helper function to find parent unit by ID
   const findParentUnit = (parentId: number | null) => {
     if (!parentId || !unitsData || !Array.isArray(unitsData)) return null;
     return unitsData.find((unit: any) => unit.id === parentId);
   };
-  
+
   // Add full unit hierarchical name (with parent units)
-  const unitsWithHierarchy = Array.isArray(unitsData) ? unitsData.map((unit: any) => {
-    let parentUnit = findParentUnit(unit.parentId);
-    let grandparentUnit = parentUnit ? findParentUnit(parentUnit.parentId) : null;
-    
-    let fullName = unit.name;
-    
-    if (parentUnit) {
-      fullName += ` (${parentUnit.unitLevel}: ${parentUnit.name}`;
-      
-      if (grandparentUnit) {
-        fullName += `, ${grandparentUnit.unitLevel}: ${grandparentUnit.name}`;
-      }
-      
-      fullName += ')';
-    }
-    
-    return {
-      ...unit,
-      fullName
-    };
-  }) : [];
+  const unitsWithHierarchy = Array.isArray(unitsData)
+    ? unitsData.map((unit: any) => {
+        let parentUnit = findParentUnit(unit.parentId);
+        let grandparentUnit = parentUnit
+          ? findParentUnit(parentUnit.parentId)
+          : null;
+
+        let fullName = unit.name;
+
+        if (parentUnit) {
+          fullName += ` (${parentUnit.unitLevel}: ${parentUnit.name}`;
+
+          if (grandparentUnit) {
+            fullName += `, ${grandparentUnit.unitLevel}: ${grandparentUnit.name}`;
+          }
+
+          fullName += ")";
+        }
+
+        return {
+          ...unit,
+          fullName,
+        };
+      })
+    : [];
 
   // Filter units based on search text
-  const filteredUnits = searchUnit && unitsWithHierarchy && Array.isArray(unitsWithHierarchy)
-    ? unitsWithHierarchy.filter((unit: any) => {
-        return (
-          (unit.fullName && unit.fullName.toLowerCase().includes(searchUnit.toLowerCase())) ||
-          (unit.name && unit.name.toLowerCase().includes(searchUnit.toLowerCase())) ||
-          (unit.unitLevel && unit.unitLevel.toLowerCase().includes(searchUnit.toLowerCase()))
-        );
-      }).slice(0, 5) // Limit to 5 suggestions
-    : [];
-    
+  const filteredUnits =
+    searchUnit && unitsWithHierarchy && Array.isArray(unitsWithHierarchy)
+      ? unitsWithHierarchy
+          .filter((unit: any) => {
+            return (
+              (unit.fullName &&
+                unit.fullName
+                  .toLowerCase()
+                  .includes(searchUnit.toLowerCase())) ||
+              (unit.name &&
+                unit.name.toLowerCase().includes(searchUnit.toLowerCase())) ||
+              (unit.unitLevel &&
+                unit.unitLevel.toLowerCase().includes(searchUnit.toLowerCase()))
+            );
+          })
+          .slice(0, 5) // Limit to 5 suggestions
+      : [];
+
   // Add participant to selected list
   const addParticipant = (participant: any) => {
-    if (!selectedParticipants.find(p => p.id === participant.id)) {
-      const newParticipants = [...selectedParticipants, { 
-        id: participant.id, 
-        name: `${participant.rank || ''} ${participant.name}`.trim()
-      }];
-      
+    if (!selectedParticipants.find((p) => p.id === participant.id)) {
+      const newParticipants = [
+        ...selectedParticipants,
+        {
+          id: participant.id,
+          name: `${participant.rank || ""} ${participant.name}`.trim(),
+        },
+      ];
+
       setSelectedParticipants(newParticipants);
-      
+
       // Update the form field with comma-separated IDs
-      form.setValue('participants', newParticipants.map(p => p.id).join(','));
+      form.setValue("participants", newParticipants.map((p) => p.id).join(","));
     }
-    setSearchParticipant('');
+    setSearchParticipant("");
     setShowParticipantResults(false);
   };
-  
+
   // Add unit to selected list
   const addUnit = (unit: any) => {
     console.log("Adding unit:", unit);
-    if (!selectedUnits.find(u => u.id === unit.id)) {
-      const newUnits = [...selectedUnits, { 
-        id: unit.id, 
-        name: unit.name,
-        unitLevel: unit.unitLevel
-      }];
+    if (!selectedUnits.find((u) => u.id === unit.id)) {
+      const newUnits = [
+        ...selectedUnits,
+        {
+          id: unit.id,
+          name: unit.name,
+          unitLevel: unit.unitLevel,
+        },
+      ];
       setSelectedUnits(newUnits);
-      
+
       // Update the form field with comma-separated IDs
-      form.setValue('participatingUnits', newUnits.map(u => u.id).join(','));
+      form.setValue("participatingUnits", newUnits.map((u) => u.id).join(","));
     }
-    setSearchUnit('');
+    setSearchUnit("");
     setShowUnitResults(false);
   };
-  
+
   // Remove participant from selected list
   const removeParticipant = (id: number) => {
-    const updated = selectedParticipants.filter(p => p.id !== id);
+    const updated = selectedParticipants.filter((p) => p.id !== id);
     setSelectedParticipants(updated);
-    
+
     // Update the form field
-    form.setValue('participants', updated.map(p => p.id).join(','));
+    form.setValue("participants", updated.map((p) => p.id).join(","));
   };
-  
+
   // Remove unit from selected list
   const removeUnit = (id: number) => {
-    const updated = selectedUnits.filter(u => u.id !== id);
+    const updated = selectedUnits.filter((u) => u.id !== id);
     setSelectedUnits(updated);
-    
+
     // Update the form field
-    form.setValue('participatingUnits', updated.map(u => u.id).join(','));
+    form.setValue("participatingUnits", updated.map((u) => u.id).join(","));
   };
 
   // Create event mutation
@@ -289,12 +343,18 @@ export default function EventForm() {
     mutationFn: async (values: EventFormValues) => {
       // Format participants as array of numbers
       const participantIds = values.participants
-        ? values.participants.split(",").map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+        ? values.participants
+            .split(",")
+            .map((id) => parseInt(id.trim()))
+            .filter((id) => !isNaN(id))
         : [];
 
       // Format participating units as array of numbers
       const unitIds = values.participatingUnits
-        ? values.participatingUnits.split(",").map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+        ? values.participatingUnits
+            .split(",")
+            .map((id) => parseInt(id.trim()))
+            .filter((id) => !isNaN(id))
         : [];
 
       // Add current user as a participant
@@ -305,7 +365,7 @@ export default function EventForm() {
       // Ensure current unit is included
       const unitIdArray = user?.unitId ? [user.unitId] : [];
       if (unitIds.length > 0) {
-        unitIds.forEach(id => {
+        unitIds.forEach((id) => {
           if (!unitIdArray.includes(id)) {
             unitIdArray.push(id);
           }
@@ -331,7 +391,10 @@ export default function EventForm() {
         step: 1, // Default to step 1 (Planning) - we'll maintain this for compatibility
         date: values.executionDate.toISOString(), // Use execution date as the main date
         isMultiDayEvent: values.isMultiDayEvent,
-        endDate: values.isMultiDayEvent && values.endDate ? values.endDate.toISOString() : null,
+        endDate:
+          values.isMultiDayEvent && values.endDate
+            ? values.endDate.toISOString()
+            : null,
         receivedDate: values.receivedDate.toISOString(),
         location: values.location,
         objectives: values.objectives,
@@ -341,7 +404,7 @@ export default function EventForm() {
         participants: participantIds, // This should be an array of numbers
         participatingUnits: unitIdArray, // This should be an array of numbers
         notifyParticipants: values.notifyParticipants,
-        eventType: values.eventType || "training", 
+        eventType: values.eventType || "training",
         trainingEchelon: values.trainingEchelon || "squad",
         trainingElements: values.trainingElements || "",
         planningNotes: values.planningNotes || "",
@@ -358,19 +421,15 @@ export default function EventForm() {
         ...stepDates,
         // Attachments will be handled separately in a multipart request if needed
       };
-      
+
       console.log("Submitting event data:", eventData);
 
       try {
-        const response = await apiRequest(
-          'POST',
-          '/api/events',
-          eventData
-        );
-        
+        const response = await apiRequest("POST", "/api/events", eventData);
+
         // Invalidate the events query to refresh the list
-        queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-        
+        queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+
         return response;
       } catch (error) {
         console.error("Error creating event:", error);
@@ -380,9 +439,10 @@ export default function EventForm() {
     onSuccess: () => {
       toast({
         title: "Event created successfully",
-        description: "Your event has been created and participants have been notified.",
+        description:
+          "Your event has been created and participants have been notified.",
       });
-      
+
       // Navigate to the events page
       navigate("/events");
     },
@@ -390,7 +450,8 @@ export default function EventForm() {
       console.error("Error creating event:", error);
       toast({
         title: "Error creating event",
-        description: "There was an error creating your event. Please try again.",
+        description:
+          "There was an error creating your event. Please try again.",
         variant: "destructive",
       });
     },
@@ -417,11 +478,10 @@ export default function EventForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
             {/* Basic Event Information */}
             <div className="space-y-6">
               <h3 className="text-lg font-medium">Basic Event Information</h3>
-              
+
               <FormField
                 control={form.control}
                 name="title"
@@ -466,7 +526,11 @@ export default function EventForm() {
                   name="executionDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>{form.watch("isMultiDayEvent") ? "Start Date" : "Execution Date"}</FormLabel>
+                      <FormLabel>
+                        {form.watch("isMultiDayEvent")
+                          ? "Start Date"
+                          : "Execution Date"}
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -480,7 +544,13 @@ export default function EventForm() {
                               {field.value ? (
                                 format(field.value, "PPP")
                               ) : (
-                                <span>Pick {form.watch("isMultiDayEvent") ? "start" : "execution"} date</span>
+                                <span>
+                                  Pick{" "}
+                                  {form.watch("isMultiDayEvent")
+                                    ? "start"
+                                    : "execution"}{" "}
+                                  date
+                                </span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -496,15 +566,15 @@ export default function EventForm() {
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        {form.watch("isMultiDayEvent") 
-                          ? "The date when the event begins" 
+                        {form.watch("isMultiDayEvent")
+                          ? "The date when the event begins"
                           : "The date when the event will be executed"}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 {form.watch("isMultiDayEvent") && (
                   <FormField
                     control={form.control}
@@ -537,7 +607,9 @@ export default function EventForm() {
                               selected={field.value || undefined}
                               onSelect={field.onChange}
                               initialFocus
-                              disabled={(date) => date < form.watch("executionDate")}
+                              disabled={(date) =>
+                                date < form.watch("executionDate")
+                              }
                             />
                           </PopoverContent>
                         </Popover>
@@ -549,7 +621,7 @@ export default function EventForm() {
                     )}
                   />
                 )}
-                
+
                 <FormField
                   control={form.control}
                   name="receivedDate"
@@ -611,12 +683,20 @@ export default function EventForm() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="training">Training</SelectItem>
-                          <SelectItem value="field_exercise">Field Exercise</SelectItem>
-                          <SelectItem value="qualification">Qualification</SelectItem>
+                          <SelectItem value="field_exercise">
+                            Field Exercise
+                          </SelectItem>
+                          <SelectItem value="qualification">
+                            Qualification
+                          </SelectItem>
                           <SelectItem value="briefing">Briefing</SelectItem>
-                          <SelectItem value="planning">Planning Session</SelectItem>
+                          <SelectItem value="planning">
+                            Planning Session
+                          </SelectItem>
                           <SelectItem value="inspection">Inspection</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
+                          <SelectItem value="maintenance">
+                            Maintenance
+                          </SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
@@ -633,7 +713,10 @@ export default function EventForm() {
                   <FormItem>
                     <FormLabel>Location</FormLabel>
                     <FormControl>
-                      <Input placeholder="Training Area, Base Name, etc." {...field} />
+                      <Input
+                        placeholder="Training Area, Base Name, etc."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -672,7 +755,7 @@ export default function EventForm() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="trainingElements"
@@ -680,9 +763,9 @@ export default function EventForm() {
                     <FormItem>
                       <FormLabel>Training Elements</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Specific elements being trained (e.g. 1st and 3rd Squad)" 
-                          {...field} 
+                        <Input
+                          placeholder="Specific elements being trained (e.g. 1st and 3rd Squad)"
+                          {...field}
                         />
                       </FormControl>
                       <FormDescription>
@@ -698,7 +781,7 @@ export default function EventForm() {
             {/* Event Details */}
             <div className="space-y-6">
               <h3 className="text-lg font-medium">Event Details</h3>
-              
+
               <FormField
                 control={form.control}
                 name="objectives"
@@ -731,7 +814,8 @@ export default function EventForm() {
                       />
                     </FormControl>
                     <FormDescription>
-                      The mission statement provides the task and purpose of the operation
+                      The mission statement provides the task and purpose of the
+                      operation
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -752,7 +836,8 @@ export default function EventForm() {
                       />
                     </FormControl>
                     <FormDescription>
-                      The concept of operation outlines the commander's intent and how forces will be employed
+                      The concept of operation outlines the commander's intent
+                      and how forces will be employed
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -782,10 +867,11 @@ export default function EventForm() {
             <div className="space-y-6">
               <h3 className="text-lg font-medium">8-Step Training Model</h3>
               <p className="text-sm text-muted-foreground">
-                The 8-Step Training Model timeline helps you plan and track each phase of the training event. 
-                You can set target dates and add notes for each step.
+                The 8-Step Training Model timeline helps you plan and track each
+                phase of the training event. You can set target dates and add
+                notes for each step.
               </p>
-              
+
               <Accordion type="multiple" className="w-full">
                 {trainingSteps.map((step) => (
                   <AccordionItem key={step.id} value={`step-${step.id}`}>
@@ -819,7 +905,10 @@ export default function EventForm() {
                                     </Button>
                                   </FormControl>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="start"
+                                >
                                   <Calendar
                                     mode="single"
                                     selected={field.value}
@@ -832,7 +921,7 @@ export default function EventForm() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name={`step${step.id}Notes` as any}
@@ -856,11 +945,11 @@ export default function EventForm() {
                 ))}
               </Accordion>
             </div>
-            
+
             {/* Planning Notes and Attachments */}
             <div className="space-y-6">
               <h3 className="text-lg font-medium">Additional Planning Notes</h3>
-              
+
               <FormField
                 control={form.control}
                 name="planningNotes"
@@ -894,20 +983,30 @@ export default function EventForm() {
                     }}
                   />
                   <p className="text-sm text-muted-foreground mt-2">
-                    Upload OPORD, maps, diagrams or any relevant documents (Max 5MB each)
+                    Upload OPORD, maps, diagrams or any relevant documents (Max
+                    5MB each)
                   </p>
-                  
+
                   {files.length > 0 && (
                     <div className="mt-4 w-full">
-                      <h5 className="text-sm font-medium mb-2">Selected Files ({files.length})</h5>
+                      <h5 className="text-sm font-medium mb-2">
+                        Selected Files ({files.length})
+                      </h5>
                       <ul className="space-y-2">
                         {files.map((file, index) => (
-                          <li key={index} className="flex items-center justify-between p-2 bg-background rounded border">
-                            <span className="text-sm truncate max-w-[300px]">{file.name}</span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => setFiles(files.filter((_, i) => i !== index))}
+                          <li
+                            key={index}
+                            className="flex items-center justify-between p-2 bg-background rounded border"
+                          >
+                            <span className="text-sm truncate max-w-[300px]">
+                              {file.name}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setFiles(files.filter((_, i) => i !== index))
+                              }
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -919,11 +1018,11 @@ export default function EventForm() {
                 </div>
               </div>
             </div>
-            
+
             {/* Participants and Units */}
             <div className="space-y-6">
               <h3 className="text-lg font-medium">Participants and Units</h3>
-              
+
               {/* Participant autocomplete */}
               <div className="space-y-4">
                 <FormLabel>Participants</FormLabel>
@@ -948,20 +1047,24 @@ export default function EventForm() {
                     />
                     <UserPlus className="absolute right-2.5 h-4 w-4 text-muted-foreground" />
                   </div>
-                  
+
                   {showParticipantResults && searchParticipant && (
                     <div className="absolute z-10 mt-1 w-full bg-background border rounded-md shadow-md">
                       {filteredUsers.length > 0 ? (
                         <ul className="py-1 max-h-60 overflow-auto">
                           {filteredUsers.map((user: any) => (
-                            <li 
-                              key={user.id} 
+                            <li
+                              key={user.id}
                               className="px-4 py-2 hover:bg-accent cursor-pointer flex items-center"
                               onClick={() => addParticipant(user)}
                             >
-                              <span className="text-sm font-medium mr-2">{user.rank}</span>
+                              <span className="text-sm font-medium mr-2">
+                                {user.rank}
+                              </span>
                               <span>{user.name}</span>
-                              <span className="text-xs text-muted-foreground ml-auto">{user.username}</span>
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {user.username}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -973,12 +1076,12 @@ export default function EventForm() {
                     </div>
                   )}
                 </div>
-                
+
                 {selectedParticipants.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {selectedParticipants.map((participant) => (
-                      <Badge 
-                        key={participant.id} 
+                      <Badge
+                        key={participant.id}
                         variant="secondary"
                         className="flex items-center gap-1"
                       >
@@ -994,17 +1097,14 @@ export default function EventForm() {
                     ))}
                   </div>
                 )}
-                
+
                 <FormDescription>
                   Search and select participants for this event
                 </FormDescription>
-                
-                <input 
-                  type="hidden"
-                  {...form.register('participants')}
-                />
+
+                <input type="hidden" {...form.register("participants")} />
               </div>
-              
+
               {/* Units autocomplete */}
               <div className="space-y-4">
                 <FormLabel>Participating Units</FormLabel>
@@ -1029,20 +1129,22 @@ export default function EventForm() {
                     />
                     <Users className="absolute right-2.5 h-4 w-4 text-muted-foreground" />
                   </div>
-                  
+
                   {showUnitResults && searchUnit && (
                     <div className="absolute z-10 mt-1 w-full bg-background border rounded-md shadow-md">
                       {filteredUnits.length > 0 ? (
                         <ul className="py-1 max-h-60 overflow-auto">
                           {filteredUnits.map((unit: any) => (
-                            <li 
-                              key={unit.id} 
+                            <li
+                              key={unit.id}
                               className="px-4 py-2 hover:bg-accent cursor-pointer flex items-center"
                               onClick={() => addUnit(unit)}
                             >
                               <span>{unit.fullName || unit.name}</span>
                               {unit.unitLevel && (
-                                <span className="text-xs text-muted-foreground ml-auto">{unit.unitLevel}</span>
+                                <span className="text-xs text-muted-foreground ml-auto">
+                                  {unit.unitLevel}
+                                </span>
                               )}
                             </li>
                           ))}
@@ -1055,12 +1157,12 @@ export default function EventForm() {
                     </div>
                   )}
                 </div>
-                
+
                 {selectedUnits.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {selectedUnits.map((unit) => (
-                      <Badge 
-                        key={unit.id} 
+                      <Badge
+                        key={unit.id}
                         variant="secondary"
                         className="flex items-center gap-1"
                       >
@@ -1076,15 +1178,12 @@ export default function EventForm() {
                     ))}
                   </div>
                 )}
-                
+
                 <FormDescription>
                   Search and select units participating in this event
                 </FormDescription>
-                
-                <input 
-                  type="hidden"
-                  {...form.register('participatingUnits')}
-                />
+
+                <input type="hidden" {...form.register("participatingUnits")} />
               </div>
 
               <FormField

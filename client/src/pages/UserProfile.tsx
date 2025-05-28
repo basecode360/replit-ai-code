@@ -2,31 +2,37 @@ import { useState, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { User, Event, AAR } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/lib/auth-provider";
-import { 
-  Loader2, 
-  Calendar, 
-  Building, 
-  FileText, 
-  User as UserIcon, 
+import { User, Event, AAR } from "../../../shared/schema";
+import { apiRequest } from "../lib/queryClient";
+import { useAuth } from "../lib/auth-provider";
+import {
+  Loader2,
+  Calendar,
+  Building,
+  FileText,
+  User as UserIcon,
   Shield,
   Activity,
   ClipboardList,
   ArrowLeft,
   Mail,
-  Zap
+  Zap,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import UserChainOfCommand from "@/components/users/UserChainOfCommand";
-import AnalysisTab from "@/components/users/AnalysisTab";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Separator } from "../components/ui/separator";
+import { ScrollArea } from "../components/ui/scroll-area";
+import UserChainOfCommand from "../components/users/UserChainOfCommand";
+import AnalysisTab from "../components/users/AnalysisTab";
 
 export default function UserProfile() {
   const [, params] = useRoute("/users/:id");
@@ -50,10 +56,7 @@ export default function UserProfile() {
   });
 
   // Fetch user's unit data
-  const {
-    data: unit,
-    isLoading: unitLoading,
-  } = useQuery({
+  const { data: unit, isLoading: unitLoading } = useQuery({
     queryKey: ["/api/units", user?.unitId],
     queryFn: async () => {
       if (!user?.unitId) return null;
@@ -64,10 +67,7 @@ export default function UserProfile() {
   });
 
   // Fetch user's events
-  const {
-    data: userEvents = [],
-    isLoading: eventsLoading,
-  } = useQuery({
+  const { data: userEvents = [], isLoading: eventsLoading } = useQuery({
     queryKey: ["/api/users", userId, "events"],
     queryFn: async () => {
       if (userId <= 0) return [];
@@ -78,10 +78,7 @@ export default function UserProfile() {
   });
 
   // Fetch user's AARs
-  const {
-    data: userAARs = [],
-    isLoading: aarsLoading,
-  } = useQuery({
+  const { data: userAARs = [], isLoading: aarsLoading } = useQuery({
     queryKey: ["/api/users", userId, "aars"],
     queryFn: async () => {
       if (userId <= 0) return [];
@@ -116,7 +113,7 @@ export default function UserProfile() {
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         return eventDate >= thirtyDaysAgo;
       }).length,
-      completedAARs: sortedAARs.length // For now, all AARs are considered completed
+      completedAARs: sortedAARs.length, // For now, all AARs are considered completed
     };
   }, [sortedEvents, sortedAARs]);
 
@@ -134,7 +131,8 @@ export default function UserProfile() {
             </div>
             <CardTitle className="mb-2">User Not Found</CardTitle>
             <CardDescription className="mb-6">
-              The requested user profile could not be found or you don't have permission to view it.
+              The requested user profile could not be found or you don't have
+              permission to view it.
             </CardDescription>
             <Button asChild>
               <Link href="/dashboard">Return to Dashboard</Link>
@@ -196,7 +194,7 @@ export default function UserProfile() {
               </Avatar>
               <h2 className="text-xl font-bold">{user.name}</h2>
               <p className="text-muted-foreground">@{user.username}</p>
-              
+
               <div className="flex flex-wrap justify-center gap-2 mt-2">
                 <Badge variant="secondary">{user.rank}</Badge>
                 <Badge variant="outline">{user.role}</Badge>
@@ -210,8 +208,12 @@ export default function UserProfile() {
                 <Building className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Unit</p>
-                  <p className="text-sm text-muted-foreground">{unit?.name ?? "Loading..."}</p>
-                  <p className="text-xs text-muted-foreground">{unit?.unitLevel ?? ""}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {unit?.name ?? "Loading..."}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {unit?.unitLevel ?? ""}
+                  </p>
                 </div>
               </div>
 
@@ -220,7 +222,9 @@ export default function UserProfile() {
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Contact</p>
-                    <p className="text-sm text-muted-foreground">Messages coming soon</p>
+                    <p className="text-sm text-muted-foreground">
+                      Messages coming soon
+                    </p>
                   </div>
                 </div>
               )}
@@ -230,7 +234,7 @@ export default function UserProfile() {
 
             <div className="space-y-2">
               <h3 className="text-sm font-medium mb-2">Activity Summary</h3>
-              
+
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-muted/60 rounded p-2 text-center">
                   <p className="text-2xl font-bold">{metrics.totalEvents}</p>
@@ -238,7 +242,9 @@ export default function UserProfile() {
                 </div>
                 <div className="bg-muted/60 rounded p-2 text-center">
                   <p className="text-2xl font-bold">{metrics.totalAARs}</p>
-                  <p className="text-xs text-muted-foreground">AARs Submitted</p>
+                  <p className="text-xs text-muted-foreground">
+                    AARs Submitted
+                  </p>
                 </div>
                 <div className="bg-muted/60 rounded p-2 text-center">
                   <p className="text-2xl font-bold">{metrics.recentEvents}</p>
@@ -246,7 +252,9 @@ export default function UserProfile() {
                 </div>
                 <div className="bg-muted/60 rounded p-2 text-center">
                   <p className="text-2xl font-bold">{metrics.completedAARs}</p>
-                  <p className="text-xs text-muted-foreground">Completed AARs</p>
+                  <p className="text-xs text-muted-foreground">
+                    Completed AARs
+                  </p>
                 </div>
               </div>
             </div>
@@ -255,14 +263,18 @@ export default function UserProfile() {
 
         {/* Main Content Area */}
         <div className="md:col-span-2 space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid grid-cols-4 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="events">Events</TabsTrigger>
               <TabsTrigger value="aars">AARs</TabsTrigger>
               <TabsTrigger value="analysis">Analysis</TabsTrigger>
             </TabsList>
-            
+
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-4">
               <Card>
@@ -278,7 +290,7 @@ export default function UserProfile() {
                   </p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -291,7 +303,7 @@ export default function UserProfile() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* Events Tab */}
             <TabsContent value="events" className="space-y-4">
               <Card>
@@ -301,7 +313,9 @@ export default function UserProfile() {
                     Training Events
                   </CardTitle>
                   <CardDescription>
-                    Events that {userId === currentUser?.id ? "you have" : "this user has"} participated in
+                    Events that{" "}
+                    {userId === currentUser?.id ? "you have" : "this user has"}{" "}
+                    participated in
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -309,16 +323,29 @@ export default function UserProfile() {
                     <ScrollArea className="h-[400px] pr-4">
                       <div className="space-y-4">
                         {sortedEvents.map((event: Event) => (
-                          <div key={event.id} className="border rounded-md p-3 hover:border-primary">
+                          <div
+                            key={event.id}
+                            className="border rounded-md p-3 hover:border-primary"
+                          >
                             <div className="flex justify-between items-start mb-2">
                               <div>
-                                <Link href={`/events/${event.id}`} className="font-medium hover:underline">
+                                <Link
+                                  href={`/events/${event.id}`}
+                                  className="font-medium hover:underline"
+                                >
                                   {event.title}
                                 </Link>
                                 <div className="text-sm text-muted-foreground">
                                   {format(new Date(event.date), "MMMM d, yyyy")}
                                   {event.isMultiDayEvent && event.endDate && (
-                                    <> to {format(new Date(event.endDate), "MMMM d, yyyy")}</>
+                                    <>
+                                      {" "}
+                                      to{" "}
+                                      {format(
+                                        new Date(event.endDate),
+                                        "MMMM d, yyyy"
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -329,7 +356,9 @@ export default function UserProfile() {
                             </div>
                             <div className="mt-2 flex justify-end">
                               <Button size="sm" variant="ghost" asChild>
-                                <Link href={`/events/${event.id}`}>View Details</Link>
+                                <Link href={`/events/${event.id}`}>
+                                  View Details
+                                </Link>
                               </Button>
                             </div>
                           </div>
@@ -344,7 +373,7 @@ export default function UserProfile() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* AARs Tab */}
             <TabsContent value="aars" className="space-y-4">
               <Card>
@@ -354,7 +383,9 @@ export default function UserProfile() {
                     After Action Reviews
                   </CardTitle>
                   <CardDescription>
-                    AARs that {userId === currentUser?.id ? "you have" : "this user has"} submitted
+                    AARs that{" "}
+                    {userId === currentUser?.id ? "you have" : "this user has"}{" "}
+                    submitted
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -362,49 +393,92 @@ export default function UserProfile() {
                     <ScrollArea className="h-[400px] pr-4">
                       <div className="space-y-4">
                         {sortedAARs.map((aar: AAR) => (
-                          <div key={aar.id} className="border rounded-md p-3 hover:border-primary">
+                          <div
+                            key={aar.id}
+                            className="border rounded-md p-3 hover:border-primary"
+                          >
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <div className="font-medium">
                                   AAR for Event #{aar.eventId}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  Submitted on {format(new Date(aar.createdAt), "MMMM d, yyyy")}
+                                  Submitted on{" "}
+                                  {format(
+                                    new Date(aar.createdAt),
+                                    "MMMM d, yyyy"
+                                  )}
                                 </div>
                               </div>
                             </div>
                             <div className="space-y-2 mt-3">
                               <div>
-                                <p className="text-xs font-medium text-green-600 dark:text-green-500">SUSTAIN ({aar.sustainItems.length})</p>
+                                <p className="text-xs font-medium text-green-600 dark:text-green-500">
+                                  SUSTAIN ({aar.sustainItems.length})
+                                </p>
                                 {aar.sustainItems.length > 0 ? (
                                   <ul className="text-sm list-disc list-inside pl-2">
-                                    {aar.sustainItems.slice(0, 1).map((item: any, index: number) => (
-                                      <li key={`sustain-${index}`} className="truncate">{typeof item === 'string' ? item : item.text}</li>
-                                    ))}
-                                    {aar.sustainItems.length > 1 && <li className="text-xs text-muted-foreground">+ {aar.sustainItems.length - 1} more</li>}
+                                    {aar.sustainItems
+                                      .slice(0, 1)
+                                      .map((item: any, index: number) => (
+                                        <li
+                                          key={`sustain-${index}`}
+                                          className="truncate"
+                                        >
+                                          {typeof item === "string"
+                                            ? item
+                                            : item.text}
+                                        </li>
+                                      ))}
+                                    {aar.sustainItems.length > 1 && (
+                                      <li className="text-xs text-muted-foreground">
+                                        + {aar.sustainItems.length - 1} more
+                                      </li>
+                                    )}
                                   </ul>
                                 ) : (
-                                  <p className="text-sm text-muted-foreground">None provided</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    None provided
+                                  </p>
                                 )}
                               </div>
-                              
+
                               <div>
-                                <p className="text-xs font-medium text-amber-600 dark:text-amber-500">IMPROVE ({aar.improveItems.length})</p>
+                                <p className="text-xs font-medium text-amber-600 dark:text-amber-500">
+                                  IMPROVE ({aar.improveItems.length})
+                                </p>
                                 {aar.improveItems.length > 0 ? (
                                   <ul className="text-sm list-disc list-inside pl-2">
-                                    {aar.improveItems.slice(0, 1).map((item: any, index: number) => (
-                                      <li key={`improve-${index}`} className="truncate">{typeof item === 'string' ? item : item.text}</li>
-                                    ))}
-                                    {aar.improveItems.length > 1 && <li className="text-xs text-muted-foreground">+ {aar.improveItems.length - 1} more</li>}
+                                    {aar.improveItems
+                                      .slice(0, 1)
+                                      .map((item: any, index: number) => (
+                                        <li
+                                          key={`improve-${index}`}
+                                          className="truncate"
+                                        >
+                                          {typeof item === "string"
+                                            ? item
+                                            : item.text}
+                                        </li>
+                                      ))}
+                                    {aar.improveItems.length > 1 && (
+                                      <li className="text-xs text-muted-foreground">
+                                        + {aar.improveItems.length - 1} more
+                                      </li>
+                                    )}
                                   </ul>
                                 ) : (
-                                  <p className="text-sm text-muted-foreground">None provided</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    None provided
+                                  </p>
                                 )}
                               </div>
                             </div>
                             <div className="mt-2 flex justify-end">
                               <Button size="sm" variant="ghost" asChild>
-                                <Link href={`/events/${aar.eventId}`}>View Event</Link>
+                                <Link href={`/events/${aar.eventId}`}>
+                                  View Event
+                                </Link>
                               </Button>
                             </div>
                           </div>
@@ -419,7 +493,7 @@ export default function UserProfile() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* Analysis Tab */}
             <TabsContent value="analysis" className="space-y-4">
               <AnalysisTab userId={userId} />

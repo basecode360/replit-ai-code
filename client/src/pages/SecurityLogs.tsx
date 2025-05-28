@@ -1,17 +1,25 @@
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Shield, Search, Calendar, Download, Loader2, AlertTriangle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
+import {
+  Shield,
+  Search,
+  Calendar,
+  Download,
+  Loader2,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   CardDescription,
-} from "@/components/ui/card";
+} from "./components/ui/card";
 import {
   Table,
   TableBody,
@@ -19,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "./components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -28,24 +36,28 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "./components/ui/pagination";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+} from "./components/ui/select";
+import { Badge } from "./components/ui/badge";
 
 export default function SecurityLogs() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [actionFilter, setActionFilter] = useState<string | null>(null);
-  
+
   // Get audit logs
-  const { data: auditLogs = [], isLoading, refetch } = useQuery({
+  const {
+    data: auditLogs = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["/api/audit-logs"],
     enabled: !!user,
   });
@@ -57,15 +69,18 @@ export default function SecurityLogs() {
   });
 
   // Action types (derived from data for filtering)
-  const actionTypes = Array.from(new Set(auditLogs.map((log: any) => log.action)));
+  const actionTypes = Array.from(
+    new Set(auditLogs.map((log: any) => log.action))
+  );
 
   // Filter logs based on search and action filter
   const filteredLogs = auditLogs.filter((log: any) => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch =
+      !searchQuery ||
       JSON.stringify(log).toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesAction = !actionFilter || log.action === actionFilter;
-    
+
     return matchesSearch && matchesAction;
   });
 
@@ -79,16 +94,51 @@ export default function SecurityLogs() {
 
   // Get badge color based on action type
   const getActionBadge = (action: string) => {
-    if (action.includes('login') || action.includes('logout')) {
-      return <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">{action}</Badge>;
-    } else if (action.includes('create')) {
-      return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">{action}</Badge>;
-    } else if (action.includes('update')) {
-      return <Badge variant="outline" className="bg-amber-100 text-amber-800 hover:bg-amber-100">{action}</Badge>;
-    } else if (action.includes('delete')) {
-      return <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">{action}</Badge>;
-    } else if (action.includes('restore')) {
-      return <Badge variant="outline" className="bg-purple-100 text-purple-800 hover:bg-purple-100">{action}</Badge>;
+    if (action.includes("login") || action.includes("logout")) {
+      return (
+        <Badge
+          variant="outline"
+          className="bg-blue-100 text-blue-800 hover:bg-blue-100"
+        >
+          {action}
+        </Badge>
+      );
+    } else if (action.includes("create")) {
+      return (
+        <Badge
+          variant="outline"
+          className="bg-green-100 text-green-800 hover:bg-green-100"
+        >
+          {action}
+        </Badge>
+      );
+    } else if (action.includes("update")) {
+      return (
+        <Badge
+          variant="outline"
+          className="bg-amber-100 text-amber-800 hover:bg-amber-100"
+        >
+          {action}
+        </Badge>
+      );
+    } else if (action.includes("delete")) {
+      return (
+        <Badge
+          variant="outline"
+          className="bg-red-100 text-red-800 hover:bg-red-100"
+        >
+          {action}
+        </Badge>
+      );
+    } else if (action.includes("restore")) {
+      return (
+        <Badge
+          variant="outline"
+          className="bg-purple-100 text-purple-800 hover:bg-purple-100"
+        >
+          {action}
+        </Badge>
+      );
     }
     return <Badge variant="outline">{action}</Badge>;
   };
@@ -136,7 +186,10 @@ export default function SecurityLogs() {
             />
           </div>
           <div className="w-full sm:w-[200px]">
-            <Select value={actionFilter || ""} onValueChange={(value) => setActionFilter(value || null)}>
+            <Select
+              value={actionFilter || ""}
+              onValueChange={(value) => setActionFilter(value || null)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Filter by action" />
               </SelectTrigger>
@@ -196,18 +249,25 @@ export default function SecurityLogs() {
                     {paginatedLogs.map((log: any) => (
                       <TableRow key={log.id}>
                         <TableCell className="font-mono text-xs whitespace-nowrap">
-                          {format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss')}
+                          {format(
+                            new Date(log.timestamp),
+                            "yyyy-MM-dd HH:mm:ss"
+                          )}
                         </TableCell>
                         <TableCell>{getUsernameById(log.userId)}</TableCell>
                         <TableCell>{getActionBadge(log.action)}</TableCell>
-                        <TableCell className="font-mono text-xs">{log.ipAddress}</TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {log.ipAddress}
+                        </TableCell>
                         <TableCell>
                           {log.details ? (
                             <pre className="text-xs whitespace-pre-wrap max-w-xs overflow-hidden text-ellipsis">
                               {JSON.stringify(log.details, null, 2)}
                             </pre>
                           ) : (
-                            <span className="text-muted-foreground text-sm">No details</span>
+                            <span className="text-muted-foreground text-sm">
+                              No details
+                            </span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -221,46 +281,54 @@ export default function SecurityLogs() {
                 <Pagination className="mt-4">
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      <PaginationPrevious
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
                         disabled={currentPage === 1}
                       />
                     </PaginationItem>
-                    
-                    {Array.from({ length: Math.min(totalPages, 5) }).map((_, idx) => {
-                      let pageNum: number;
-                      
-                      if (totalPages <= 5) {
-                        pageNum = idx + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = idx + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + idx;
-                      } else {
-                        pageNum = currentPage - 2 + idx;
-                      }
 
-                      return (
-                        <PaginationItem key={idx}>
-                          <PaginationLink 
-                            isActive={currentPage === pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    })}
-                    
+                    {Array.from({ length: Math.min(totalPages, 5) }).map(
+                      (_, idx) => {
+                        let pageNum: number;
+
+                        if (totalPages <= 5) {
+                          pageNum = idx + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = idx + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + idx;
+                        } else {
+                          pageNum = currentPage - 2 + idx;
+                        }
+
+                        return (
+                          <PaginationItem key={idx}>
+                            <PaginationLink
+                              isActive={currentPage === pageNum}
+                              onClick={() => setCurrentPage(pageNum)}
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                    )}
+
                     {totalPages > 5 && currentPage < totalPages - 2 && (
                       <PaginationItem>
                         <PaginationEllipsis />
                       </PaginationItem>
                     )}
-                    
+
                     <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      <PaginationNext
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages)
+                          )
+                        }
                         disabled={currentPage === totalPages}
                       />
                     </PaginationItem>

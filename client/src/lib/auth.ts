@@ -1,8 +1,14 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
 import { queryClient } from "./queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "./hooks/use-toast";
 import { useLocation } from "wouter";
 
 export type User = {
@@ -33,9 +39,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check if user is already logged in
   const { data, isLoading } = useQuery({
     queryKey: ["/api/auth/me"],
-    retry: false
+    retry: false,
   });
-  
+
   // Handle success and error with useEffect
   useEffect(() => {
     if (data) {
@@ -45,8 +51,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Login mutation
   const loginMutation = useMutation({
-    mutationFn: async ({ username, password }: { username: string; password: string }) => {
-      const res = await apiRequest("POST", "/api/auth/login", { username, password });
+    mutationFn: async ({
+      username,
+      password,
+    }: {
+      username: string;
+      password: string;
+    }) => {
+      const res = await apiRequest("POST", "/api/auth/login", {
+        username,
+        password,
+      });
       return await res.json();
     },
     onSuccess: (data) => {
@@ -112,7 +127,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       await loginMutation.mutateAsync({ username, password });
       return true;
@@ -143,7 +161,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     register,
   };
-  
+
   return React.createElement(
     AuthContext.Provider,
     { value: contextValue },

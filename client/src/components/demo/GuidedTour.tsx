@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { ChevronLeft, ChevronRight, ListOrdered } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -9,7 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "./components/ui/sheet";
 
 // Define the tour steps with their routes and descriptions
 const tourSteps = [
@@ -18,50 +18,52 @@ const tourSteps = [
     name: "Welcome",
     path: "/demo",
     description: "Introduction to the Venice AI Training Management System",
-    highlightId: null
+    highlightId: null,
   },
   {
     id: 2,
     name: "Events",
     path: "/demo/events",
-    description: "See how the system tracks training events through the 8-step process",
-    highlightId: "event-calendar"
+    description:
+      "See how the system tracks training events through the 8-step process",
+    highlightId: "event-calendar",
   },
   {
     id: 3,
     name: "AARs",
     path: "/demo/aars",
-    description: "Explore how after action reviews capture and preserve training insights",
-    highlightId: "aar-list"
+    description:
+      "Explore how after action reviews capture and preserve training insights",
+    highlightId: "aar-list",
   },
   {
     id: 4,
     name: "Analysis",
     path: "/demo/analysis",
     description: "Discover AI-powered analysis of training data",
-    highlightId: "analysis-results"
+    highlightId: "analysis-results",
   },
   {
     id: 5,
     name: "Custom Prompts",
     path: "/demo/custom-prompt",
     description: "Ask specific questions about your training data",
-    highlightId: "prompt-input"
+    highlightId: "prompt-input",
   },
   {
     id: 6,
     name: "Profile",
     path: "/demo/profile",
     description: "See how your training history follows you between units",
-    highlightId: "user-history"
+    highlightId: "user-history",
   },
   {
     id: 7,
     name: "Sign Up",
     path: "/demo/signup",
     description: "Choose a plan and get started with Venice AI",
-    highlightId: null
-  }
+    highlightId: null,
+  },
 ];
 
 export default function GuidedTour() {
@@ -71,19 +73,24 @@ export default function GuidedTour() {
 
   // Determine the current step based on the URL path
   useEffect(() => {
-    const step = tourSteps.find(step => step.path === location);
+    const step = tourSteps.find((step) => step.path === location);
     if (step) {
       setCurrentStep(step.id);
-      
+
       // Highlight the element if specified
       if (step.highlightId) {
         const element = document.querySelector(`.${step.highlightId}`);
         if (element) {
-          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-all');
-          
+          element.classList.add(
+            "ring-2",
+            "ring-primary",
+            "ring-offset-2",
+            "transition-all"
+          );
+
           // Remove highlight after 3 seconds
           setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+            element.classList.remove("ring-2", "ring-primary", "ring-offset-2");
           }, 3000);
         }
       }
@@ -93,7 +100,7 @@ export default function GuidedTour() {
   // Navigate to the previous step
   const goToPrevious = () => {
     if (currentStep > 1) {
-      const prevStep = tourSteps.find(step => step.id === currentStep - 1);
+      const prevStep = tourSteps.find((step) => step.id === currentStep - 1);
       if (prevStep) {
         navigate(prevStep.path);
       }
@@ -103,7 +110,7 @@ export default function GuidedTour() {
   // Navigate to the next step
   const goToNext = () => {
     if (currentStep < tourSteps.length) {
-      const nextStep = tourSteps.find(step => step.id === currentStep + 1);
+      const nextStep = tourSteps.find((step) => step.id === currentStep + 1);
       if (nextStep) {
         navigate(nextStep.path);
       }
@@ -111,7 +118,8 @@ export default function GuidedTour() {
   };
 
   // Get the current tour step
-  const currentTourStep = tourSteps.find(step => step.id === currentStep) || tourSteps[0];
+  const currentTourStep =
+    tourSteps.find((step) => step.id === currentStep) || tourSteps[0];
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
@@ -126,7 +134,8 @@ export default function GuidedTour() {
           <SheetHeader>
             <SheetTitle>GreenBookAAR Demo Tour</SheetTitle>
             <SheetDescription>
-              Follow this guided tour to explore the key features of GreenBookAAR
+              Follow this guided tour to explore the key features of
+              GreenBookAAR
             </SheetDescription>
           </SheetHeader>
           <div className="mt-6 space-y-6">
@@ -135,9 +144,11 @@ export default function GuidedTour() {
                 Step {currentStep} of {tourSteps.length}
               </h3>
               <h2 className="text-xl font-semibold">{currentTourStep.name}</h2>
-              <p className="text-muted-foreground">{currentTourStep.description}</p>
+              <p className="text-muted-foreground">
+                {currentTourStep.description}
+              </p>
             </div>
-            
+
             <div className="space-y-2">
               <h3 className="text-sm font-medium">Tour Steps</h3>
               <ul className="space-y-2">
@@ -163,26 +174,26 @@ export default function GuidedTour() {
           </div>
         </SheetContent>
       </Sheet>
-      
+
       <div className="bg-card rounded-full border shadow-md p-1 flex items-center">
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="rounded-full"
           onClick={goToPrevious}
           disabled={currentStep === 1}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        
+
         <div className="px-2 text-sm">
           <span className="font-medium">{currentStep}</span>
           <span className="text-muted-foreground">/{tourSteps.length}</span>
         </div>
-        
-        <Button 
-          variant="ghost" 
-          size="icon" 
+
+        <Button
+          variant="ghost"
+          size="icon"
           className="rounded-full"
           onClick={goToNext}
           disabled={currentStep === tourSteps.length}

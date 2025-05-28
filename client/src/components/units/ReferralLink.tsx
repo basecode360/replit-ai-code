@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, QrCode } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useToast } from "./hooks/use-toast";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Card, CardContent, CardHeader } from "./components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "./components/ui/dialog";
 
 interface ReferralLinkProps {
   unitId: number;
@@ -20,7 +20,7 @@ interface ReferralLinkProps {
 export default function ReferralLink({ unitId }: ReferralLinkProps) {
   const { toast } = useToast();
   const [showQR, setShowQR] = useState(false);
-  
+
   // Get unit details
   const { data: unit, isLoading } = useQuery({
     queryKey: [`/api/units/${unitId}`],
@@ -47,7 +47,9 @@ export default function ReferralLink({ unitId }: ReferralLinkProps) {
     return (
       <Card>
         <CardContent className="p-4">
-          <p className="text-muted-foreground">No referral code available for this unit.</p>
+          <p className="text-muted-foreground">
+            No referral code available for this unit.
+          </p>
         </CardContent>
       </Card>
     );
@@ -60,7 +62,9 @@ export default function ReferralLink({ unitId }: ReferralLinkProps) {
     <>
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold">Referral Link for {unit.name}</h3>
+          <h3 className="text-lg font-semibold">
+            Referral Link for {unit.name}
+          </h3>
           <p className="text-sm text-muted-foreground">
             Share this link to invite subordinate units to register
           </p>
@@ -103,13 +107,16 @@ export default function ReferralLink({ unitId }: ReferralLinkProps) {
           <div className="flex justify-center p-4">
             {/* We're using a server-side QR code API */}
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(referralLink)}`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                referralLink
+              )}`}
               alt="Registration QR Code"
               className="border rounded"
             />
           </div>
           <div className="text-center text-sm text-muted-foreground mt-2">
-            Referral Code: <span className="font-mono">{unit.referralCode}</span>
+            Referral Code:{" "}
+            <span className="font-mono">{unit.referralCode}</span>
           </div>
         </DialogContent>
       </Dialog>

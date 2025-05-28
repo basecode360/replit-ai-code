@@ -1,7 +1,7 @@
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "./components/ui/card";
 import { Info, AlertTriangle, CheckCircle, FileQuestion } from "lucide-react";
-import { VeniceAnalysis } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { VeniceAnalysis } from "./lib/types";
+import { Button } from "./components/ui/button";
 import { Link } from "wouter";
 
 interface VeniceInsightsProps {
@@ -10,13 +10,15 @@ interface VeniceInsightsProps {
 
 export default function VeniceInsights({ analysis }: VeniceInsightsProps) {
   // Check if we have meaningful analysis data
-  const hasData = analysis.trends.length > 0 && 
-                  analysis.frictionPoints.length > 0 && 
-                  analysis.recommendations.length > 0;
-                  
+  const hasData =
+    analysis.trends.length > 0 &&
+    analysis.frictionPoints.length > 0 &&
+    analysis.recommendations.length > 0;
+
   // Special case: Check if this is a "not enough data" message
-  const notEnoughData = analysis.trends.length === 1 && 
-                        analysis.trends[0].category === "Insufficient Data";
+  const notEnoughData =
+    analysis.trends.length === 1 &&
+    analysis.trends[0].category === "Insufficient Data";
 
   return (
     <Card>
@@ -43,9 +45,7 @@ export default function VeniceInsights({ analysis }: VeniceInsightsProps) {
             </p>
             <div className="mt-6">
               <Link href="/events">
-                <Button>
-                  Create More AARs
-                </Button>
+                <Button>Create More AARs</Button>
               </Link>
             </div>
           </div>

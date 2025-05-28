@@ -6,17 +6,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "./components/ui/dialog";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, AlertCircle, ArrowUpCircle } from "lucide-react";
+} from "./components/ui/card";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ArrowUpCircle,
+} from "lucide-react";
 import type { VeniceAnalysis } from "@shared/schema";
 
 interface AIAnalysisDialogProps {
@@ -47,15 +53,15 @@ export function AIAnalysisDialog({
   const fetchAnalysis = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`/api/events/${eventId}/analyze`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to generate analysis");
       }
-      
+
       const data = await response.json();
       setAnalysis(data);
     } catch (err: any) {
@@ -84,9 +90,12 @@ export function AIAnalysisDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">AI Analysis for {eventTitle}</DialogTitle>
+          <DialogTitle className="text-xl">
+            AI Analysis for {eventTitle}
+          </DialogTitle>
           <DialogDescription>
-            AI-generated insights based on the After-Action Reviews submitted for this event
+            AI-generated insights based on the After-Action Reviews submitted
+            for this event
           </DialogDescription>
         </DialogHeader>
 
@@ -101,7 +110,9 @@ export function AIAnalysisDialog({
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-10">
             <AlertCircle className="h-10 w-10 text-red-500 mb-4" />
-            <p className="text-red-500 font-medium">Error generating analysis</p>
+            <p className="text-red-500 font-medium">
+              Error generating analysis
+            </p>
             <p className="text-sm text-muted-foreground mt-2">{error}</p>
             <Button onClick={fetchAnalysis} className="mt-4">
               Try Again
@@ -123,7 +134,9 @@ export function AIAnalysisDialog({
               <CardContent>
                 <div className="space-y-4">
                   {analysis.trends.length === 0 ? (
-                    <p className="text-muted-foreground italic">No trends identified.</p>
+                    <p className="text-muted-foreground italic">
+                      No trends identified.
+                    </p>
                   ) : (
                     analysis.trends.map((trend, index) => (
                       <div key={index} className="p-4 border rounded-md">
@@ -140,7 +153,9 @@ export function AIAnalysisDialog({
                             )}
                           </div>
                         </div>
-                        <p className="text-muted-foreground">{trend.description}</p>
+                        <p className="text-muted-foreground">
+                          {trend.description}
+                        </p>
                       </div>
                     ))
                   )}
@@ -162,7 +177,9 @@ export function AIAnalysisDialog({
               <CardContent>
                 <div className="space-y-4">
                   {analysis.frictionPoints.length === 0 ? (
-                    <p className="text-muted-foreground italic">No friction points identified.</p>
+                    <p className="text-muted-foreground italic">
+                      No friction points identified.
+                    </p>
                   ) : (
                     analysis.frictionPoints.map((point, index) => (
                       <div key={index} className="p-4 border rounded-md">
@@ -172,7 +189,9 @@ export function AIAnalysisDialog({
                             {point.impact} Impact
                           </Badge>
                         </div>
-                        <p className="text-muted-foreground">{point.description}</p>
+                        <p className="text-muted-foreground">
+                          {point.description}
+                        </p>
                       </div>
                     ))
                   )}
@@ -194,17 +213,25 @@ export function AIAnalysisDialog({
               <CardContent>
                 <div className="space-y-4">
                   {analysis.recommendations.length === 0 ? (
-                    <p className="text-muted-foreground italic">No recommendations available.</p>
+                    <p className="text-muted-foreground italic">
+                      No recommendations available.
+                    </p>
                   ) : (
                     analysis.recommendations.map((recommendation, index) => (
                       <div key={index} className="p-4 border rounded-md">
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium">{recommendation.category}</h4>
-                          <Badge className={getBadgeClass(recommendation.priority)}>
+                          <h4 className="font-medium">
+                            {recommendation.category}
+                          </h4>
+                          <Badge
+                            className={getBadgeClass(recommendation.priority)}
+                          >
                             {recommendation.priority} Priority
                           </Badge>
                         </div>
-                        <p className="text-muted-foreground">{recommendation.description}</p>
+                        <p className="text-muted-foreground">
+                          {recommendation.description}
+                        </p>
                       </div>
                     ))
                   )}
@@ -224,9 +251,7 @@ export function AIAnalysisDialog({
             Close
           </Button>
           {!loading && analysis && (
-            <Button onClick={fetchAnalysis}>
-              Regenerate Analysis
-            </Button>
+            <Button onClick={fetchAnalysis}>Regenerate Analysis</Button>
           )}
         </DialogFooter>
       </DialogContent>

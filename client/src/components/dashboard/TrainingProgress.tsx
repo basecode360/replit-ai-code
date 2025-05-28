@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { StepStatus, trainingStepInfo } from "@/lib/types";
+import { Card, CardContent, CardHeader } from "./components/ui/card";
+import { Progress } from "./components/ui/progress";
+import { Badge } from "./components/ui/badge";
+import { StepStatus, trainingStepInfo } from "./lib/types";
 
 interface TrainingProgressProps {
   title: string;
@@ -63,14 +63,16 @@ export default function TrainingProgress({
             <div key={step.id} className="text-center">
               <div
                 className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                  stepStatuses[index] === "complete" || stepStatuses[index] === "in-progress"
+                  stepStatuses[index] === "complete" ||
+                  stepStatuses[index] === "in-progress"
                     ? "bg-primary"
                     : "bg-gray-300"
                 }`}
               >
                 <span
                   className={
-                    stepStatuses[index] === "complete" || stepStatuses[index] === "in-progress"
+                    stepStatuses[index] === "complete" ||
+                    stepStatuses[index] === "in-progress"
                       ? "text-white font-medium"
                       : "text-gray-600 font-medium"
                   }
@@ -81,9 +83,7 @@ export default function TrainingProgress({
               <div className="mt-2 text-xs font-medium text-gray-700">
                 {step.name}
               </div>
-              <div className="mt-1">
-                {getStatusBadge(stepStatuses[index])}
-              </div>
+              <div className="mt-1">{getStatusBadge(stepStatuses[index])}</div>
             </div>
           ))}
         </div>

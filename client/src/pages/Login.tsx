@@ -1,12 +1,12 @@
 import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import AuthWrapper from "@/components/auth/AuthWrapper";
-import { Button } from "@/components/ui/button";
+import AuthWrapper from "./components/auth/AuthWrapper";
+import { Button } from "./components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,11 +14,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+} from "./components/ui/form";
+import { Input } from "./components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "./components/ui/card";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "./components/ui/alert";
 import { Link } from "wouter";
 
 const loginSchema = z.object({
@@ -50,13 +55,15 @@ export default function Login() {
 
   const onSubmit = async (values: LoginFormValues) => {
     setError(null);
-    
+
     try {
       console.log("Submitting login with:", values.username);
       await login(values.username, values.password);
     } catch (err: any) {
       console.error("Login error:", err);
-      setError(err?.message || "Failed to log in. Please check your credentials.");
+      setError(
+        err?.message || "Failed to log in. Please check your credentials."
+      );
     }
   };
 
@@ -64,9 +71,12 @@ export default function Login() {
     <>
       <Helmet>
         <title>Login - Military AAR Management System</title>
-        <meta name="description" content="Log in to the Military After-Action Review Management System to access training events, submit AARs, and view analytics." />
+        <meta
+          name="description"
+          content="Log in to the Military After-Action Review Management System to access training events, submit AARs, and view analytics."
+        />
       </Helmet>
-      
+
       <AuthWrapper>
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -84,7 +94,10 @@ export default function Login() {
             )}
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="username"
@@ -117,10 +130,7 @@ export default function Login() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                >
+                <Button type="submit" className="w-full">
                   Login
                 </Button>
               </form>

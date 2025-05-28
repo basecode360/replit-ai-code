@@ -1,27 +1,27 @@
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { 
-  Calendar, 
-  FileText, 
-  Users, 
-  MoreHorizontal, 
+import {
+  Calendar,
+  FileText,
+  Users,
+  MoreHorizontal,
   Loader2,
   Download,
   Printer,
-  Search
+  Search,
 } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "./components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,14 +29,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+} from "./components/ui/dropdown-menu";
+import { Badge } from "./components/ui/badge";
 import { useState } from "react";
 
 export default function AARs() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Get AARs for the unit
   const { data: aars = [], isLoading: isAARsLoading } = useQuery({
     queryKey: ["/api/units", user?.unitId, "aars"],
@@ -59,7 +59,7 @@ export default function AARs() {
     queryKey: ["/api/events"],
     queryFn: async () => {
       if (!user) return [];
-      const res = await fetch('/api/events');
+      const res = await fetch("/api/events");
       const data = await res.json();
       console.log("All events loaded:", data);
       return data;
@@ -71,7 +71,7 @@ export default function AARs() {
   const { data: users = [], isLoading: isUsersLoading } = useQuery({
     queryKey: ["/api/users"],
     queryFn: async () => {
-      const res = await fetch('/api/users');
+      const res = await fetch("/api/users");
       return await res.json();
     },
     enabled: !!user,
@@ -84,30 +84,37 @@ export default function AARs() {
     // Make sure we have a valid event with its data
     const event = events.find((e: any) => e.id === aar.eventId);
     const creator = users.find((u: any) => u.id === aar.createdBy);
-    
+
     // Get planned and actual outcomes from AAR metadata
-    const metadataItem = aar.sustainItems && aar.sustainItems.find((item: any) => 
-      item.tags && Array.isArray(item.tags) && item.tags.includes('aar_metadata')
-    );
-    
+    const metadataItem =
+      aar.sustainItems &&
+      aar.sustainItems.find(
+        (item: any) =>
+          item.tags &&
+          Array.isArray(item.tags) &&
+          item.tags.includes("aar_metadata")
+      );
+
     let plannedOutcome = null;
     let actualOutcome = null;
-    
+
     if (metadataItem && metadataItem.text) {
-      const plannedMatch = /Planned outcome: (.*?)(\n|$)/.exec(metadataItem.text);
+      const plannedMatch = /Planned outcome: (.*?)(\n|$)/.exec(
+        metadataItem.text
+      );
       const actualMatch = /Actual outcome: (.*?)(\n|$)/.exec(metadataItem.text);
-      
+
       plannedOutcome = plannedMatch && plannedMatch[1] ? plannedMatch[1] : null;
       actualOutcome = actualMatch && actualMatch[1] ? actualMatch[1] : null;
     }
-    
+
     // Log the event data to help troubleshoot
     if (!event) {
       console.log(`Event not found for AAR ${aar.id}, eventId: ${aar.eventId}`);
     } else {
       console.log(`Found event for AAR ${aar.id}:`, event.title);
     }
-    
+
     return {
       ...aar,
       event,
@@ -117,25 +124,46 @@ export default function AARs() {
       creatorName: creator ? `${creator.rank} ${creator.name}` : "Unknown",
       participantCount: event?.participants?.length || 0,
       plannedOutcome,
-      actualOutcome
+      actualOutcome,
     };
   });
 
   // Filter AARs based on search query
   const filteredAARs = formattedAARs.filter((aar: any) => {
     if (!searchQuery) return true;
-    
+
     const searchTerms = searchQuery.toLowerCase().split(" ");
     const searchableText = `
       ${aar.eventTitle.toLowerCase()} 
       ${aar.location.toLowerCase()} 
       ${aar.creatorName.toLowerCase()}
-      ${Array.isArray(aar.sustainItems) ? aar.sustainItems.map((item: any) => typeof item === 'object' ? item.text : item).join(" ").toLowerCase() : ''}
-      ${Array.isArray(aar.improveItems) ? aar.improveItems.map((item: any) => typeof item === 'object' ? item.text : item).join(" ").toLowerCase() : ''}
-      ${Array.isArray(aar.actionItems) ? aar.actionItems.map((item: any) => typeof item === 'object' ? item.text : item).join(" ").toLowerCase() : ''}
+      ${
+        Array.isArray(aar.sustainItems)
+          ? aar.sustainItems
+              .map((item: any) => (typeof item === "object" ? item.text : item))
+              .join(" ")
+              .toLowerCase()
+          : ""
+      }
+      ${
+        Array.isArray(aar.improveItems)
+          ? aar.improveItems
+              .map((item: any) => (typeof item === "object" ? item.text : item))
+              .join(" ")
+              .toLowerCase()
+          : ""
+      }
+      ${
+        Array.isArray(aar.actionItems)
+          ? aar.actionItems
+              .map((item: any) => (typeof item === "object" ? item.text : item))
+              .join(" ")
+              .toLowerCase()
+          : ""
+      }
     `;
-    
-    return searchTerms.every(term => searchableText.includes(term));
+
+    return searchTerms.every((term) => searchableText.includes(term));
   });
 
   return (
@@ -188,7 +216,7 @@ export default function AARs() {
             <FileText className="h-12 w-12 text-muted-foreground/60 mb-4" />
             <h3 className="text-lg font-medium">No AARs found</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {searchQuery 
+              {searchQuery
                 ? "Try adjusting your search terms."
                 : "There are no AARs for your unit yet."}
             </p>
@@ -203,7 +231,8 @@ export default function AARs() {
                   <div>
                     <CardTitle>{aar.eventTitle}</CardTitle>
                     <CardDescription>
-                      Created by {aar.creatorName} on {format(new Date(aar.createdAt), 'MMM d, yyyy')}
+                      Created by {aar.creatorName} on{" "}
+                      {format(new Date(aar.createdAt), "MMM d, yyyy")}
                     </CardDescription>
                   </div>
                   <DropdownMenu>
@@ -237,7 +266,7 @@ export default function AARs() {
                 <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {format(aar.date, 'MMM d, yyyy')}
+                    {format(aar.date, "MMM d, yyyy")}
                   </div>
                   <div className="flex items-center text-muted-foreground">
                     <Users className="mr-2 h-4 w-4" />
@@ -248,20 +277,28 @@ export default function AARs() {
                     AAR
                   </Badge>
                 </div>
-                
+
                 {/* Planned and Actual Outcomes */}
                 {(aar.plannedOutcome || aar.actualOutcome) && (
                   <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                     {aar.plannedOutcome && (
                       <div className="p-3 bg-muted rounded-md">
-                        <h4 className="text-xs font-medium mb-1">What was supposed to happen</h4>
-                        <p className="text-xs line-clamp-2">{aar.plannedOutcome}</p>
+                        <h4 className="text-xs font-medium mb-1">
+                          What was supposed to happen
+                        </h4>
+                        <p className="text-xs line-clamp-2">
+                          {aar.plannedOutcome}
+                        </p>
                       </div>
                     )}
                     {aar.actualOutcome && (
                       <div className="p-3 bg-muted rounded-md">
-                        <h4 className="text-xs font-medium mb-1">What actually happened</h4>
-                        <p className="text-xs line-clamp-2">{aar.actualOutcome}</p>
+                        <h4 className="text-xs font-medium mb-1">
+                          What actually happened
+                        </h4>
+                        <p className="text-xs line-clamp-2">
+                          {aar.actualOutcome}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -272,29 +309,54 @@ export default function AARs() {
                     <h4 className="text-sm font-semibold mb-2">Sustain</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
                       {aar.sustainItems
-                        .filter((item: any) => !(typeof item === 'object' && item.tags && item.tags.includes('aar_metadata')))
+                        .filter(
+                          (item: any) =>
+                            !(
+                              typeof item === "object" &&
+                              item.tags &&
+                              item.tags.includes("aar_metadata")
+                            )
+                        )
                         .slice(0, 3)
                         .map((item: any, idx: number) => (
                           <li key={`sustain-${idx}`} className="line-clamp-1">
-                            {typeof item === 'object' ? item.text : item}
+                            {typeof item === "object" ? item.text : item}
                           </li>
                         ))}
-                      {aar.sustainItems.filter((item: any) => !(typeof item === 'object' && item.tags && item.tags.includes('aar_metadata'))).length > 3 && (
+                      {aar.sustainItems.filter(
+                        (item: any) =>
+                          !(
+                            typeof item === "object" &&
+                            item.tags &&
+                            item.tags.includes("aar_metadata")
+                          )
+                      ).length > 3 && (
                         <li className="text-primary text-xs">
-                          +{aar.sustainItems.filter((item: any) => !(typeof item === 'object' && item.tags && item.tags.includes('aar_metadata'))).length - 3} more...
+                          +
+                          {aar.sustainItems.filter(
+                            (item: any) =>
+                              !(
+                                typeof item === "object" &&
+                                item.tags &&
+                                item.tags.includes("aar_metadata")
+                              )
+                          ).length - 3}{" "}
+                          more...
                         </li>
                       )}
                     </ul>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-sm font-semibold mb-2">Improve</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
-                      {aar.improveItems.slice(0, 3).map((item: any, idx: number) => (
-                        <li key={`improve-${idx}`} className="line-clamp-1">
-                          {typeof item === 'object' ? item.text : item}
-                        </li>
-                      ))}
+                      {aar.improveItems
+                        .slice(0, 3)
+                        .map((item: any, idx: number) => (
+                          <li key={`improve-${idx}`} className="line-clamp-1">
+                            {typeof item === "object" ? item.text : item}
+                          </li>
+                        ))}
                       {aar.improveItems.length > 3 && (
                         <li className="text-primary text-xs">
                           +{aar.improveItems.length - 3} more...
@@ -302,15 +364,17 @@ export default function AARs() {
                       )}
                     </ul>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-sm font-semibold mb-2">Action Items</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
-                      {aar.actionItems.slice(0, 3).map((item: any, idx: number) => (
-                        <li key={`action-${idx}`} className="line-clamp-1">
-                          {typeof item === 'object' ? item.text : item}
-                        </li>
-                      ))}
+                      {aar.actionItems
+                        .slice(0, 3)
+                        .map((item: any, idx: number) => (
+                          <li key={`action-${idx}`} className="line-clamp-1">
+                            {typeof item === "object" ? item.text : item}
+                          </li>
+                        ))}
                       {aar.actionItems.length > 3 && (
                         <li className="text-primary text-xs">
                           +{aar.actionItems.length - 3} more...

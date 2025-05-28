@@ -3,12 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/lib/auth-provider";
+import { apiRequest } from "./lib/queryClient";
+import { queryClient } from "./lib/queryClient";
+import { useToast } from "./hooks/use-toast";
+import { useAuth } from "./lib/auth-provider";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,16 +16,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "./components/ui/form";
+import { Input } from "./components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+} from "./components/ui/select";
+import { Card, CardContent, CardHeader } from "./components/ui/card";
 
 const unitSchema = z.object({
   name: z.string().min(3, "Unit name must be at least 3 characters"),
@@ -107,8 +107,8 @@ export default function UnitRegistration() {
                 You can now generate referral links for subordinate units.
               </p>
             </div>
-            
-            <Button 
+
+            <Button
               className="w-full"
               onClick={() => {
                 form.reset();
@@ -129,7 +129,10 @@ export default function UnitRegistration() {
                   <FormItem>
                     <FormLabel>Unit Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 1st Infantry Battalion" {...field} />
+                      <Input
+                        placeholder="e.g., 1st Infantry Battalion"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,7 +145,10 @@ export default function UnitRegistration() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit Level</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select unit level" />
@@ -167,7 +173,10 @@ export default function UnitRegistration() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Parent Unit (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select parent unit" />

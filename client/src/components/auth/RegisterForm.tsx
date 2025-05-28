@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useLocation, useParams } from "wouter";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
-import { MilitaryRoles } from "@/lib/types";
+import { MilitaryRoles } from "./lib/types";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,19 +15,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "./components/ui/form";
+import { Input } from "./components/ui/input";
+import { Textarea } from "./components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+} from "./components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "./components/ui/card";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "./components/ui/alert";
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -46,7 +51,7 @@ export default function RegisterForm() {
   const [, navigate] = useLocation();
   const { referralCode } = useParams();
   const [error, setError] = useState<string | null>(null);
-  
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -59,30 +64,32 @@ export default function RegisterForm() {
       bio: "",
     },
   });
-  
+
   // Query for unit info if referral code is provided
   const { data: unitData, isLoading: isUnitLoading } = useQuery<any>({
-    queryKey: referralCode ? [`/api/units/referral/${referralCode}`] : ["empty-query"],
+    queryKey: referralCode
+      ? [`/api/units/referral/${referralCode}`]
+      : ["empty-query"],
     enabled: !!referralCode,
   });
-  
+
   // Use test unit if no referral code
   useEffect(() => {
     if (!referralCode) {
-      form.setValue('unitId', 1); // Use our test battalion
+      form.setValue("unitId", 1); // Use our test battalion
     }
   }, [form, referralCode]);
 
   // Update unitId when unit data is loaded
   useEffect(() => {
-    if (unitData && typeof unitData === 'object' && 'id' in unitData) {
+    if (unitData && typeof unitData === "object" && "id" in unitData) {
       form.setValue("unitId", unitData.id);
     }
   }, [unitData, form]);
 
   const onSubmit = async (values: RegisterFormValues) => {
     setError(null);
-    
+
     try {
       console.log("Submitting registration for:", values.username);
       await register(values);
@@ -99,14 +106,17 @@ export default function RegisterForm() {
         <p className="text-muted-foreground text-center mt-2">
           Create your account in the AAR Management System
         </p>
-        {referralCode && unitData && typeof unitData === 'object' && 'name' in unitData && (
-          <Alert className="mt-4">
-            <AlertDescription>
-              You are registering as a member of{" "}
-              <span className="font-bold">{unitData.name}</span>
-            </AlertDescription>
-          </Alert>
-        )}
+        {referralCode &&
+          unitData &&
+          typeof unitData === "object" &&
+          "name" in unitData && (
+            <Alert className="mt-4">
+              <AlertDescription>
+                You are registering as a member of{" "}
+                <span className="font-bold">{unitData.name}</span>
+              </AlertDescription>
+            </Alert>
+          )}
       </CardHeader>
       <CardContent>
         {error && (
@@ -174,7 +184,10 @@ export default function RegisterForm() {
                   <FormItem>
                     <FormLabel>Rank</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your military rank (e.g., CPT, SGT)" {...field} />
+                      <Input
+                        placeholder="Your military rank (e.g., CPT, SGT)"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +200,10 @@ export default function RegisterForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select your role" />
@@ -213,12 +229,14 @@ export default function RegisterForm() {
                   <FormItem>
                     <FormLabel>Unit ID</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
+                      <Input
+                        type="number"
                         placeholder="Your unit ID"
                         disabled={!!unitData || !referralCode}
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value) || 0)
+                        }
                         value={field.value || ""}
                       />
                     </FormControl>

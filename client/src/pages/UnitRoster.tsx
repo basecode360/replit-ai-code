@@ -1,18 +1,37 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { User, Unit } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/lib/auth-provider";
-import { useHierarchy } from "@/hooks/use-hierarchy";
+import { apiRequest } from "./lib/queryClient";
+import { useAuth } from "./lib/auth-provider";
+import { useHierarchy } from "./hooks/use-hierarchy";
 import { Link, useLocation } from "wouter";
-import { Loader2, Search, User as UserIcon, Clipboard, Shield, ArrowUpRight } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Loader2,
+  Search,
+  User as UserIcon,
+  Clipboard,
+  Shield,
+  ArrowUpRight,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
+import { Avatar, AvatarFallback } from "./components/ui/avatar";
+import { Badge } from "./components/ui/badge";
+import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./components/ui/select";
+import { ScrollArea } from "./components/ui/scroll-area";
 
 export default function UnitRoster() {
   const { user } = useAuth();
@@ -25,7 +44,11 @@ export default function UnitRoster() {
   useEffect(() => {
     if (!selectedUnitId && user) {
       setSelectedUnitId(user.unitId);
-    } else if (!selectedUnitId && accessibleUnits && accessibleUnits.length > 0) {
+    } else if (
+      !selectedUnitId &&
+      accessibleUnits &&
+      accessibleUnits.length > 0
+    ) {
       setSelectedUnitId(accessibleUnits[0].id);
     }
   }, [user, accessibleUnits, selectedUnitId]);
@@ -39,17 +62,17 @@ export default function UnitRoster() {
     queryKey: ["/api/units", selectedUnitId, "members"],
     queryFn: async () => {
       if (!selectedUnitId) return [];
-      const res = await apiRequest("GET", `/api/units/${selectedUnitId}/members`);
+      const res = await apiRequest(
+        "GET",
+        `/api/units/${selectedUnitId}/members`
+      );
       return await res.json();
     },
     enabled: !!selectedUnitId,
   });
 
   // Fetch selected unit details
-  const {
-    data: selectedUnit,
-    isLoading: unitLoading,
-  } = useQuery({
+  const { data: selectedUnit, isLoading: unitLoading } = useQuery({
     queryKey: ["/api/units", selectedUnitId],
     queryFn: async () => {
       if (!selectedUnitId) return null;
@@ -62,7 +85,7 @@ export default function UnitRoster() {
   // Filter unit members based on search query
   const filteredMembers = unitMembers.filter((member: User) => {
     if (!searchQuery) return true;
-    
+
     const query = searchQuery.toLowerCase();
     return (
       member.name?.toLowerCase().includes(query) ||
@@ -76,10 +99,18 @@ export default function UnitRoster() {
   const sortedMembers = [...filteredMembers].sort((a: User, b: User) => {
     // First sort by role (leadership roles first)
     if (a.role !== b.role) {
-      const leadershipRoles = ["commander", "xo", "first sergeant", "platoon leader", "platoon sergeant", "squad leader", "team leader"];
+      const leadershipRoles = [
+        "commander",
+        "xo",
+        "first sergeant",
+        "platoon leader",
+        "platoon sergeant",
+        "squad leader",
+        "team leader",
+      ];
       const aRoleIndex = leadershipRoles.indexOf(a.role.toLowerCase());
       const bRoleIndex = leadershipRoles.indexOf(b.role.toLowerCase());
-      
+
       if (aRoleIndex !== -1 && bRoleIndex !== -1) {
         return aRoleIndex - bRoleIndex; // Lower index = higher rank
       } else if (aRoleIndex !== -1) {
@@ -88,11 +119,11 @@ export default function UnitRoster() {
         return 1; // b has a leadership role, a doesn't
       }
     }
-    
+
     // Then sort by name
     return a.name.localeCompare(b.name);
   });
-  
+
   const loading = membersLoading || unitLoading;
   const error = membersError;
 
@@ -120,7 +151,9 @@ export default function UnitRoster() {
                     <div
                       key={unit.id}
                       className={`p-2 rounded-md cursor-pointer transition-colors ${
-                        selectedUnitId === unit.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                        selectedUnitId === unit.id
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted"
                       }`}
                       onClick={() => setSelectedUnitId(unit.id)}
                     >
@@ -143,9 +176,13 @@ export default function UnitRoster() {
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>
-                <CardTitle>{selectedUnit ? selectedUnit.name : "Select a Unit"}</CardTitle>
+                <CardTitle>
+                  {selectedUnit ? selectedUnit.name : "Select a Unit"}
+                </CardTitle>
                 <CardDescription>
-                  {selectedUnit ? `${selectedUnit.unitLevel} • ${filteredMembers.length} members` : "No unit selected"}
+                  {selectedUnit
+                    ? `${selectedUnit.unitLevel} • ${filteredMembers.length} members`
+                    : "No unit selected"}
                 </CardDescription>
               </div>
             </div>
@@ -171,18 +208,22 @@ export default function UnitRoster() {
             ) : sortedMembers.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sortedMembers.map((member: User) => (
-                  <div 
-                    key={member.id} 
+                  <div
+                    key={member.id}
                     className="border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors"
                     onClick={() => setLocation(`/users/${member.id}`)}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <Avatar className="h-10 w-10">
-                        <AvatarFallback>{member.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback>
+                          {member.name.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium">{member.name}</div>
-                        <div className="text-sm text-muted-foreground">{member.username}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {member.username}
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -193,7 +234,7 @@ export default function UnitRoster() {
                       <Button size="sm" variant="ghost" asChild>
                         <Link href={`/users/${member.id}`}>
                           <span className="flex items-center">
-                            View Profile 
+                            View Profile
                             <ArrowUpRight className="ml-1 h-3 w-3" />
                           </span>
                         </Link>
@@ -204,7 +245,9 @@ export default function UnitRoster() {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                {searchQuery ? "No members found matching your search" : "No members found in this unit"}
+                {searchQuery
+                  ? "No members found matching your search"
+                  : "No members found in this unit"}
               </div>
             )}
           </CardContent>

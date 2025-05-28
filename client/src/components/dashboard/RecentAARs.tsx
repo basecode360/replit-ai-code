@@ -1,7 +1,7 @@
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "./components/ui/card";
 import { Link } from "wouter";
 import { Calendar, MapPin, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "./components/ui/badge";
 import { format } from "date-fns";
 
 export interface RecentAAR {
@@ -72,7 +72,7 @@ export default function RecentAARs({ aars }: RecentAARsProps) {
                       <div className="sm:flex space-x-6">
                         <div className="flex items-center text-sm text-gray-500">
                           <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" />
-                          {format(aar.date, 'MMMM d, yyyy')}
+                          {format(aar.date, "MMMM d, yyyy")}
                         </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <MapPin className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" />

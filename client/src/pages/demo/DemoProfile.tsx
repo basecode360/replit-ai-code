@@ -1,10 +1,25 @@
-import { User, Building, Shield, Calendar, FileText, BarChart, UserPlus, ArrowRight } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GuidedTour from "@/components/demo/GuidedTour";
+import {
+  User,
+  Building,
+  Shield,
+  Calendar,
+  FileText,
+  BarChart,
+  UserPlus,
+  ArrowRight,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
+import { Badge } from "../../components/ui/badge";
+import { Separator } from "../../components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import GuidedTour from "../../components/demo/GuidedTour";
 
 // Sample user career history for demonstration
 const userCareerHistory = [
@@ -16,7 +31,7 @@ const userCareerHistory = [
     dateRange: "Jun 2023 - Feb 2025",
     totalEvents: 28,
     totalAARs: 18,
-    current: false
+    current: false,
   },
   {
     id: 2,
@@ -26,8 +41,8 @@ const userCareerHistory = [
     dateRange: "Feb 2025 - Present",
     totalEvents: 14,
     totalAARs: 9,
-    current: true
-  }
+    current: true,
+  },
 ];
 
 // Sample AARs from different units in the user's history
@@ -40,12 +55,12 @@ const userAARs = [
     fromPreviousUnit: true,
     sustainItems: [
       "Excellent squad leader initiative during unexpected obstacles",
-      "Effective use of terrain for covered movement"
+      "Effective use of terrain for covered movement",
     ],
     improveItems: [
       "Radio communication discipline needs improvement",
-      "Ammunition management was inconsistent"
-    ]
+      "Ammunition management was inconsistent",
+    ],
   },
   {
     id: 2,
@@ -55,12 +70,12 @@ const userAARs = [
     fromPreviousUnit: false,
     sustainItems: [
       "Clear and concise orders from platoon leaders",
-      "Effective coordination between platoons during movement"
+      "Effective coordination between platoons during movement",
     ],
     improveItems: [
       "Delay in consolidation reports after objectives secured",
-      "Inconsistent use of proper radio procedures"
-    ]
+      "Inconsistent use of proper radio procedures",
+    ],
   },
   {
     id: 3,
@@ -70,12 +85,12 @@ const userAARs = [
     fromPreviousUnit: true,
     sustainItems: [
       "Effective use of micro-terrain for cover and concealment",
-      "Clear and concise commands from squad leaders"
+      "Clear and concise commands from squad leaders",
     ],
     improveItems: [
       "Slow transitions between movement formations",
-      "Security posture during halts needs improvement"
-    ]
+      "Security posture during halts needs improvement",
+    ],
   },
   {
     id: 4,
@@ -85,30 +100,31 @@ const userAARs = [
     fromPreviousUnit: false,
     sustainItems: [
       "Excellent integration of company elements into battalion operations",
-      "Timely and accurate reporting to battalion headquarters"
+      "Timely and accurate reporting to battalion headquarters",
     ],
     improveItems: [
       "Company CP setup took too long",
-      "Redundant communication systems not properly tested"
-    ]
-  }
+      "Redundant communication systems not properly tested",
+    ],
+  },
 ];
 
 export default function DemoProfile() {
   return (
     <div className="container py-6">
       <GuidedTour />
-      
+
       <div className="flex flex-col space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Profile & Career History</h1>
             <p className="text-muted-foreground">
-              View your complete training history across different unit assignments
+              View your complete training history across different unit
+              assignments
             </p>
           </div>
         </div>
-        
+
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="md:col-span-1">
             <CardContent className="pt-6">
@@ -120,7 +136,7 @@ export default function DemoProfile() {
                 </Avatar>
                 <h2 className="text-xl font-bold">Michael Carter</h2>
                 <p className="text-muted-foreground">@mcarter</p>
-                
+
                 <div className="flex flex-wrap justify-center gap-2 mt-2">
                   <Badge variant="secondary">1LT</Badge>
                   <Badge variant="outline">Company XO</Badge>
@@ -134,15 +150,19 @@ export default function DemoProfile() {
                   <Building className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Current Unit</p>
-                    <p className="text-sm text-muted-foreground">Alpha Company, 1-456 Infantry</p>
+                    <p className="text-sm text-muted-foreground">
+                      Alpha Company, 1-456 Infantry
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <Shield className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Role</p>
-                    <p className="text-sm text-muted-foreground">Company Executive Officer</p>
+                    <p className="text-sm text-muted-foreground">
+                      Company Executive Officer
+                    </p>
                   </div>
                 </div>
               </div>
@@ -151,29 +171,47 @@ export default function DemoProfile() {
 
               <div className="space-y-2">
                 <h3 className="text-sm font-medium mb-2">Career Summary</h3>
-                
+
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-muted/60 rounded p-2 text-center">
-                    <p className="text-2xl font-bold">{userCareerHistory.reduce((sum, unit) => sum + unit.totalEvents, 0)}</p>
-                    <p className="text-xs text-muted-foreground">Total Events</p>
+                    <p className="text-2xl font-bold">
+                      {userCareerHistory.reduce(
+                        (sum, unit) => sum + unit.totalEvents,
+                        0
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Total Events
+                    </p>
                   </div>
                   <div className="bg-muted/60 rounded p-2 text-center">
-                    <p className="text-2xl font-bold">{userCareerHistory.reduce((sum, unit) => sum + unit.totalAARs, 0)}</p>
+                    <p className="text-2xl font-bold">
+                      {userCareerHistory.reduce(
+                        (sum, unit) => sum + unit.totalAARs,
+                        0
+                      )}
+                    </p>
                     <p className="text-xs text-muted-foreground">Total AARs</p>
                   </div>
                   <div className="bg-muted/60 rounded p-2 text-center">
-                    <p className="text-2xl font-bold">{userCareerHistory.length}</p>
-                    <p className="text-xs text-muted-foreground">Unit Assignments</p>
+                    <p className="text-2xl font-bold">
+                      {userCareerHistory.length}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Unit Assignments
+                    </p>
                   </div>
                   <div className="bg-muted/60 rounded p-2 text-center">
                     <p className="text-2xl font-bold">3</p>
-                    <p className="text-xs text-muted-foreground">Leadership Roles</p>
+                    <p className="text-xs text-muted-foreground">
+                      Leadership Roles
+                    </p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <div className="md:col-span-2 space-y-6">
             <Tabs defaultValue="history" className="w-full">
               <TabsList className="grid grid-cols-3 mb-4">
@@ -181,7 +219,7 @@ export default function DemoProfile() {
                 <TabsTrigger value="aars">AARs</TabsTrigger>
                 <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="history" className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -193,14 +231,16 @@ export default function DemoProfile() {
                       Your career progression and unit assignments
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="user-history"> {/* This div is targeted by the tour highlight */}
+                  <CardContent className="user-history">
+                    {" "}
+                    {/* This div is targeted by the tour highlight */}
                     <div className="space-y-8">
                       {userCareerHistory.map((assignment, index) => (
                         <div key={assignment.id} className="relative">
                           {index < userCareerHistory.length - 1 && (
                             <div className="absolute left-6 top-14 bottom-0 w-px bg-muted-foreground/20" />
                           )}
-                          
+
                           <div className="flex gap-3">
                             <div className="mt-1 bg-primary/10 rounded-full p-2 z-10">
                               {assignment.current ? (
@@ -209,11 +249,13 @@ export default function DemoProfile() {
                                 <Building className="h-6 w-6 text-muted-foreground" />
                               )}
                             </div>
-                            
+
                             <div className="flex-1">
                               <div className="flex flex-col md:flex-row md:justify-between md:items-start">
                                 <div>
-                                  <h3 className="font-medium">{assignment.unitName}</h3>
+                                  <h3 className="font-medium">
+                                    {assignment.unitName}
+                                  </h3>
                                   <p className="text-sm text-muted-foreground">
                                     {assignment.role} • {assignment.rank}
                                   </p>
@@ -222,7 +264,7 @@ export default function DemoProfile() {
                                   {assignment.dateRange}
                                 </p>
                               </div>
-                              
+
                               <div className="mt-2 flex flex-wrap gap-4">
                                 <div className="flex items-center gap-1 text-sm">
                                   <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -233,17 +275,21 @@ export default function DemoProfile() {
                                   <span>{assignment.totalAARs} AARs</span>
                                 </div>
                               </div>
-                              
+
                               {index === 0 && (
                                 <div className="mt-4 border-t pt-4">
                                   <div className="flex items-center gap-2 text-primary text-sm">
                                     <UserPlus className="h-4 w-4" />
-                                    <span className="font-medium">Transfer to New Unit</span>
+                                    <span className="font-medium">
+                                      Transfer to New Unit
+                                    </span>
                                     <ArrowRight className="h-4 w-4 ml-1" />
                                   </div>
                                   <p className="mt-1 text-sm text-muted-foreground">
-                                    When you transfer to a new unit, your event history and AAR insights move with you, 
-                                    preserving your training history and ensuring continuous improvement.
+                                    When you transfer to a new unit, your event
+                                    history and AAR insights move with you,
+                                    preserving your training history and
+                                    ensuring continuous improvement.
                                   </p>
                                 </div>
                               )}
@@ -255,7 +301,7 @@ export default function DemoProfile() {
                   </CardContent>
                 </Card>
               </TabsContent>
-              
+
               <TabsContent value="aars" className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -270,35 +316,51 @@ export default function DemoProfile() {
                   <CardContent>
                     <div className="space-y-4">
                       {userAARs.map((aar) => (
-                        <Card key={aar.id} className={aar.fromPreviousUnit ? "border-dashed border-muted-foreground/30" : ""}>
+                        <Card
+                          key={aar.id}
+                          className={
+                            aar.fromPreviousUnit
+                              ? "border-dashed border-muted-foreground/30"
+                              : ""
+                          }
+                        >
                           <CardContent className="p-4">
                             <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-2">
                               <div>
-                                <h4 className="font-medium">{aar.eventTitle}</h4>
+                                <h4 className="font-medium">
+                                  {aar.eventTitle}
+                                </h4>
                                 <p className="text-sm text-muted-foreground">
                                   {aar.date} • {aar.unitName}
                                 </p>
                               </div>
-                              
+
                               {aar.fromPreviousUnit && (
-                                <Badge variant="outline" className="mt-2 md:mt-0">
+                                <Badge
+                                  variant="outline"
+                                  className="mt-2 md:mt-0"
+                                >
                                   Previous Unit
                                 </Badge>
                               )}
                             </div>
-                            
+
                             <div className="grid md:grid-cols-2 gap-4 mt-4">
                               <div>
-                                <h5 className="text-sm font-medium text-green-600 mb-1">SUSTAIN</h5>
+                                <h5 className="text-sm font-medium text-green-600 mb-1">
+                                  SUSTAIN
+                                </h5>
                                 <ul className="space-y-1 pl-5 text-sm list-disc">
                                   {aar.sustainItems.map((item, index) => (
                                     <li key={`sustain-${index}`}>{item}</li>
                                   ))}
                                 </ul>
                               </div>
-                              
+
                               <div>
-                                <h5 className="text-sm font-medium text-amber-600 mb-1">IMPROVE</h5>
+                                <h5 className="text-sm font-medium text-amber-600 mb-1">
+                                  IMPROVE
+                                </h5>
                                 <ul className="space-y-1 pl-5 text-sm list-disc">
                                   {aar.improveItems.map((item, index) => (
                                     <li key={`improve-${index}`}>{item}</li>
@@ -313,7 +375,7 @@ export default function DemoProfile() {
                   </CardContent>
                 </Card>
               </TabsContent>
-              
+
               <TabsContent value="analytics" className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -327,45 +389,64 @@ export default function DemoProfile() {
                   </CardHeader>
                   <CardContent>
                     <div className="p-4 border rounded-md bg-amber-500/10 mb-6 text-center">
-                      <p className="text-amber-600 font-medium">Analytics Preview</p>
+                      <p className="text-amber-600 font-medium">
+                        Analytics Preview
+                      </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        In the full version, this tab shows personalized analytics based on your entire training history,
+                        In the full version, this tab shows personalized
+                        analytics based on your entire training history,
                         including cross-unit insights and performance trends.
                       </p>
                     </div>
-                    
+
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-medium mb-3">Key Strengths</h3>
+                        <h3 className="text-lg font-medium mb-3">
+                          Key Strengths
+                        </h3>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="border rounded-md p-3">
-                            <h4 className="font-medium text-green-600">Leadership Development</h4>
+                            <h4 className="font-medium text-green-600">
+                              Leadership Development
+                            </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Consistently positive feedback on leadership style and decision-making across multiple units.
+                              Consistently positive feedback on leadership style
+                              and decision-making across multiple units.
                             </p>
                           </div>
                           <div className="border rounded-md p-3">
-                            <h4 className="font-medium text-green-600">Communication</h4>
+                            <h4 className="font-medium text-green-600">
+                              Communication
+                            </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Strong pattern of clear and concise communication noted throughout your career.
+                              Strong pattern of clear and concise communication
+                              noted throughout your career.
                             </p>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h3 className="text-lg font-medium mb-3">Development Areas</h3>
+                        <h3 className="text-lg font-medium mb-3">
+                          Development Areas
+                        </h3>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="border rounded-md p-3">
-                            <h4 className="font-medium text-amber-600">Radio Procedure</h4>
+                            <h4 className="font-medium text-amber-600">
+                              Radio Procedure
+                            </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Recurring pattern of radio communication challenges across both unit assignments.
+                              Recurring pattern of radio communication
+                              challenges across both unit assignments.
                             </p>
                           </div>
                           <div className="border rounded-md p-3">
-                            <h4 className="font-medium text-amber-600">Command Post Operations</h4>
+                            <h4 className="font-medium text-amber-600">
+                              Command Post Operations
+                            </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Opportunity to improve CP setup efficiency based on recent AARs.
+                              Opportunity to improve CP setup efficiency based
+                              on recent AARs.
                             </p>
                           </div>
                         </div>

@@ -1,36 +1,35 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  User, 
-  Unit, 
-  MilitaryRoles, 
-  UnitLevels 
-} from "@shared/schema";
-import { getQueryFn } from "@/lib/queryClient";
-import { useAuth } from "@/lib/auth-provider";
-import { useHierarchy } from "@/hooks/use-hierarchy";
+import { User, Unit, MilitaryRoles, UnitLevels } from "../../../../shared/schema"
+import { getQueryFn } from "../../lib/queryClient";
+import { useAuth } from "../../lib/auth-provider";
+import { useHierarchy } from "../../hooks/use-hierarchy";
 
-import { 
-  Shield, 
-  ChevronRight, 
-  Users, 
-  User as UserIcon, 
+import {
+  Shield,
+  ChevronRight,
+  Users,
+  User as UserIcon,
   Building,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
 } from "lucide-react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Separator } from "../../components/ui/separator";
+import { Badge } from "../../components/ui/badge";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
+import { Button } from "../../components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../components/ui/tooltip";
 
 interface CommandChainNodeProps {
   user?: User;
@@ -44,22 +43,24 @@ interface CommandChainNodeProps {
 /**
  * Displays a single node in the chain of command
  */
-function CommandChainNode({ 
-  user, 
-  unit, 
+function CommandChainNode({
+  user,
+  unit,
   isHighlighted = false,
-  role, 
+  role,
   isUpward = false,
-  description 
+  description,
 }: CommandChainNodeProps) {
   return (
-    <div 
+    <div
       className={`
         flex items-center p-3 rounded-md gap-3 border-l-4
-        ${isHighlighted 
-          ? 'bg-primary/10 border-l-primary' 
-          : 'bg-card border-l-transparent hover:bg-accent/10'}
-        ${isUpward ? 'mb-2' : 'mt-2'}
+        ${
+          isHighlighted
+            ? "bg-primary/10 border-l-primary"
+            : "bg-card border-l-transparent hover:bg-accent/10"
+        }
+        ${isUpward ? "mb-2" : "mt-2"}
       `}
     >
       {isUpward ? (
@@ -67,7 +68,7 @@ function CommandChainNode({
       ) : (
         <ArrowDown className="h-4 w-4 text-muted-foreground" />
       )}
-      
+
       {user && (
         <>
           <Avatar className="h-8 w-8">
@@ -80,14 +81,12 @@ function CommandChainNode({
                 {user.rank}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {role || user.role}
-            </p>
+            <p className="text-xs text-muted-foreground">{role || user.role}</p>
           </div>
           <UserIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         </>
       )}
-      
+
       {unit && (
         <>
           <div className="w-8 h-8 rounded-md flex items-center justify-center bg-muted">
@@ -119,63 +118,69 @@ interface UserChainOfCommandProps {
  * Displays a user's position in the military hierarchy
  * Shows their chain of command both upward and downward
  */
-export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) {
+export default function UserChainOfCommand({
+  userId,
+}: UserChainOfCommandProps) {
   const { user: currentUser } = useAuth();
-  const { 
+  const {
     accessibleUnits,
-    accessibleUsers, 
+    accessibleUsers,
     getUsersInUnit,
     getUnitLeader,
-    isLoading 
+    isLoading,
   } = useHierarchy();
-  
+
   // Target user is either the specified user or the current user - modified type to avoid errors
-  const [targetUser, setTargetUser] = useState<{
-    id: number;
-    username: string;
-    name: string;
-    rank: string;
-    role: string;
-    unitId: number;
-    bio: string | null;
-  } | undefined>();
+  const [targetUser, setTargetUser] = useState<
+    | {
+        id: number;
+        username: string;
+        name: string;
+        rank: string;
+        role: string;
+        unitId: number;
+        bio: string | null;
+      }
+    | undefined
+  >();
   // Unit the user belongs to
   const [userUnit, setUserUnit] = useState<Unit | undefined>();
   // Superior units in the chain of command
   const [superiorUnits, setSuperiorUnits] = useState<Unit[]>([]);
-  // Units under the user's command 
+  // Units under the user's command
   const [subordinateUnits, setSubordinateUnits] = useState<Unit[]>([]);
   // Direct reports (users under direct command)
   const [directReports, setDirectReports] = useState<User[]>([]);
-  
+
   // Find superior units (up the chain of command)
   const findSuperiorUnits = (unit?: Unit): Unit[] => {
     if (!unit || !unit.parentId) return [];
-    
-    const parentUnit = accessibleUnits.find(u => u.id === unit.parentId);
+
+    const parentUnit = accessibleUnits.find((u) => u.id === unit.parentId);
     if (!parentUnit) return [];
-    
+
     return [parentUnit, ...findSuperiorUnits(parentUnit)];
   };
-  
+
   // Find subordinate units (down the chain of command)
   const findSubordinateUnits = (unitId: number): Unit[] => {
-    return accessibleUnits.filter(u => u.parentId === unitId);
+    return accessibleUnits.filter((u) => u.parentId === unitId);
   };
-  
+
   // Find users who report directly to this user
   const findDirectReports = (unit: Unit, userRole: string): User[] => {
     // Get all users in the unit
     const unitMembers = getUsersInUnit(unit.id);
-    
+
     // Subordinates are users with lower ranking roles
-    return unitMembers.filter(u => 
-      isSubordinateRole(userRole, u.role)
-    );
+    return unitMembers.filter((u) => isSubordinateRole(userRole, u.role));
   };
-  
+
   // Check if one role is subordinate to another
-  const isSubordinateRole = (superiorRole: string, potentialSubRole: string): boolean => {
+  const isSubordinateRole = (
+    superiorRole: string,
+    potentialSubRole: string
+  ): boolean => {
     // Order of roles from highest to lowest
     const roleRanking = [
       MilitaryRoles.COMMANDER,
@@ -187,28 +192,28 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
       MilitaryRoles.TEAM_LEADER,
       MilitaryRoles.SOLDIER,
     ] as const;
-    
+
     // We need to cast the roles as any to match against the enum values
     const superiorIndex = roleRanking.indexOf(superiorRole as any);
     const subIndex = roleRanking.indexOf(potentialSubRole as any);
-    
+
     // Lower index means higher rank
     return superiorIndex < subIndex;
   };
-  
+
   // Update chain of command data when dependencies change
   useEffect(() => {
     if (isLoading || !accessibleUnits.length || !accessibleUsers.length) {
       return;
     }
-    
+
     // Get the user to display
-    const user = userId 
-      ? accessibleUsers.find(u => u.id === userId) 
+    const user = userId
+      ? accessibleUsers.find((u) => u.id === userId)
       : currentUser;
-      
+
     if (!user) return;
-    
+
     // Clone only the needed fields to avoid type errors
     // Match the type we defined in the useState hook
     setTargetUser(() => ({
@@ -218,17 +223,17 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
       rank: user.rank,
       role: user.role,
       unitId: user.unitId,
-      bio: user.bio || null
+      bio: user.bio || null,
     }));
-    
+
     // Find the user's unit
-    const unit = accessibleUnits.find(u => u.id === user.unitId);
+    const unit = accessibleUnits.find((u) => u.id === user.unitId);
     setUserUnit(unit);
-    
+
     if (unit) {
       // Find units up the chain
       setSuperiorUnits(findSuperiorUnits(unit));
-      
+
       // Find units down the chain (if the user has a leadership role)
       if (user.role !== MilitaryRoles.SOLDIER) {
         setSubordinateUnits(findSubordinateUnits(unit.id));
@@ -236,7 +241,7 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
       }
     }
   }, [userId, currentUser, accessibleUnits, accessibleUsers, isLoading]);
-  
+
   if (isLoading) {
     return (
       <Card>
@@ -252,7 +257,7 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
       </Card>
     );
   }
-  
+
   if (!targetUser || !userUnit) {
     return (
       <Card>
@@ -265,7 +270,7 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
       </Card>
     );
   }
-  
+
   return (
     <Card>
       <CardHeader>
@@ -285,29 +290,31 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
               <ArrowUp className="mr-1 h-3 w-3" />
               Superior Chain
             </h3>
-            
+
             {superiorUnits.map((unit, index) => {
               const leader = getUnitLeader(unit.id);
               return (
-                <CommandChainNode 
+                <CommandChainNode
                   key={unit.id}
                   unit={unit}
                   user={leader}
                   isUpward={true}
-                  description={leader ? `Commanded by ${leader.rank} ${leader.name}` : ""}
+                  description={
+                    leader ? `Commanded by ${leader.rank} ${leader.name}` : ""
+                  }
                 />
               );
             })}
           </div>
         )}
-        
+
         {/* Current user and their unit */}
         <div className="my-4 p-4 bg-primary/20 rounded-lg border border-primary/50">
           <h3 className="text-sm font-medium mb-2 flex items-center">
             <Shield className="mr-1 h-4 w-4" />
             Current Position
           </h3>
-          
+
           <div className="flex items-center gap-3 p-2">
             <Avatar className="h-12 w-12">
               <AvatarFallback>{targetUser.name.substring(0, 2)}</AvatarFallback>
@@ -331,7 +338,7 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
             </div>
           </div>
         </div>
-        
+
         {/* Direct reports (if any) */}
         {directReports.length > 0 && (
           <div className="mt-4 mb-2">
@@ -339,17 +346,13 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
               <ArrowDown className="mr-1 h-3 w-3" />
               Direct Reports ({directReports.length})
             </h3>
-            
+
             {directReports.map((user) => (
-              <CommandChainNode 
-                key={user.id}
-                user={user}
-                isUpward={false}
-              />
+              <CommandChainNode key={user.id} user={user} isUpward={false} />
             ))}
           </div>
         )}
-        
+
         {/* Subordinate units (down the chain) */}
         {subordinateUnits.length > 0 && (
           <div className="mt-4">
@@ -357,18 +360,18 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
               <ArrowDown className="mr-1 h-3 w-3" />
               Subordinate Units ({subordinateUnits.length})
             </h3>
-            
+
             {subordinateUnits.map((unit) => {
               const leader = getUnitLeader(unit.id);
               const memberCount = getUsersInUnit(unit.id).length;
-              
+
               return (
-                <CommandChainNode 
+                <CommandChainNode
                   key={unit.id}
                   unit={unit}
                   isUpward={false}
                   description={
-                    leader 
+                    leader
                       ? `Led by ${leader.rank} ${leader.name} - ${memberCount} members`
                       : `${memberCount} members`
                   }
@@ -377,7 +380,7 @@ export default function UserChainOfCommand({ userId }: UserChainOfCommandProps) 
             })}
           </div>
         )}
-        
+
         {/* No subordinates case */}
         {directReports.length === 0 && subordinateUnits.length === 0 && (
           <div className="mt-4 text-center py-3 text-muted-foreground bg-muted/30 rounded-md">

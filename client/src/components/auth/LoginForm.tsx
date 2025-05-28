@@ -3,9 +3,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,11 +13,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+} from "./components/ui/form";
+import { Input } from "./components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "./components/ui/card";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "./components/ui/alert";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -50,12 +55,12 @@ export default function LoginForm() {
   const onSubmit = async (values: LoginFormValues) => {
     setError(null);
     setIsLoading(true);
-    
+
     try {
       console.log("Submitting login form with:", values.username);
       const success = await login(values.username, values.password);
       console.log("Login result:", success);
-      
+
       if (success) {
         // Navigation will happen via the useEffect when user is set
       } else {
@@ -119,11 +124,7 @@ export default function LoginForm() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>

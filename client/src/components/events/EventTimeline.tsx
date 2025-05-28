@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { trainingStepInfo } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "./components/ui/card";
+import { trainingStepInfo } from "./lib/types";
+import { cn } from "./lib/utils";
 
 interface EventTimelineProps {
   steps: {
@@ -11,7 +11,10 @@ interface EventTimelineProps {
   className?: string;
 }
 
-export default function EventTimeline({ steps, className }: EventTimelineProps) {
+export default function EventTimeline({
+  steps,
+  className,
+}: EventTimelineProps) {
   return (
     <Card className={cn(className)}>
       <CardHeader className="pb-2">
@@ -68,9 +71,12 @@ export default function EventTimeline({ steps, className }: EventTimelineProps) 
                     <div className="mt-2 sm:mt-0">
                       <span
                         className={cn("text-badge", {
-                          "bg-green-100 text-green-800": step.status === "complete",
-                          "bg-amber-100 text-amber-800": step.status === "in-progress",
-                          "bg-gray-100 text-gray-800": step.status === "pending",
+                          "bg-green-100 text-green-800":
+                            step.status === "complete",
+                          "bg-amber-100 text-amber-800":
+                            step.status === "in-progress",
+                          "bg-gray-100 text-gray-800":
+                            step.status === "pending",
                         })}
                       >
                         {step.status === "complete"

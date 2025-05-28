@@ -1,14 +1,21 @@
-import React from 'react';
-import { Link } from 'wouter';
-import { ChevronRight, CalendarClock, Loader2, MapPin, CalendarDays, Users } from 'lucide-react';
-import { trainingStepInfo } from '@/lib/types';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
+import React from "react";
+import { Link } from "wouter";
+import {
+  ChevronRight,
+  CalendarClock,
+  Loader2,
+  MapPin,
+  CalendarDays,
+  Users,
+} from "lucide-react";
+import { trainingStepInfo } from "./lib/types";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
 import {
   Select,
   SelectContent,
@@ -17,19 +24,22 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { Event } from '@/lib/types';
+} from "./components/ui/select";
+import { Button } from "./components/ui/button";
+import { Badge } from "./components/ui/badge";
+import { format } from "date-fns";
+import { Event } from "./lib/types";
 
 interface ActiveEventsDropdownProps {
   events: Event[];
   isLoading?: boolean;
 }
 
-export default function ActiveEventsDropdown({ events, isLoading = false }: ActiveEventsDropdownProps) {
-  const [selectedEventId, setSelectedEventId] = React.useState<string>('');
+export default function ActiveEventsDropdown({
+  events,
+  isLoading = false,
+}: ActiveEventsDropdownProps) {
+  const [selectedEventId, setSelectedEventId] = React.useState<string>("");
 
   const handleEventSelect = (value: string) => {
     setSelectedEventId(value);
@@ -49,8 +59,8 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
     }
   }, [sortedEvents, selectedEventId]);
 
-  const selectedEvent = selectedEventId 
-    ? events.find(e => e.id.toString() === selectedEventId) 
+  const selectedEvent = selectedEventId
+    ? events.find((e) => e.id.toString() === selectedEventId)
     : null;
 
   return (
@@ -60,9 +70,7 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
           <CalendarClock className="h-5 w-5" />
           <span>In-Progress Events</span>
         </CardTitle>
-        <CardDescription>
-          Current training activities
-        </CardDescription>
+        <CardDescription>Current training activities</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -92,14 +100,17 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
                 </SelectGroup>
               </SelectContent>
             </Select>
-            
+
             {selectedEvent && (
               <div className="rounded-lg border border-muted/80 bg-card shadow-sm overflow-hidden">
                 <div className="bg-muted/20 px-4 py-3 border-b border-muted">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-base">{selectedEvent.title}</h3>
+                    <h3 className="font-medium text-base">
+                      {selectedEvent.title}
+                    </h3>
                     <Badge variant="outline">
-                      {trainingStepInfo[selectedEvent.step - 1]?.name || `Step ${selectedEvent.step}`}
+                      {trainingStepInfo[selectedEvent.step - 1]?.name ||
+                        `Step ${selectedEvent.step}`}
                     </Badge>
                   </div>
                 </div>
@@ -109,9 +120,11 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
                     <div className="mb-4">
                       <div className="mb-2">
                         <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full" 
-                            style={{ width: `${(selectedEvent.step / 8) * 100}%` }}
+                          <div
+                            className="h-full bg-primary rounded-full"
+                            style={{
+                              width: `${(selectedEvent.step / 8) * 100}%`,
+                            }}
                           ></div>
                         </div>
                       </div>
@@ -120,34 +133,48 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
                           const isCompleted = index + 1 < selectedEvent.step;
                           const isCurrent = index + 1 === selectedEvent.step;
                           const isPending = index + 1 > selectedEvent.step;
-                          
+
                           return (
                             <div key={step.id} className="text-center">
-                              <div 
+                              <div
                                 className={`w-6 h-6 mx-auto rounded-full flex items-center justify-center ${
-                                  isCompleted ? "bg-primary" : 
-                                  isCurrent ? "bg-primary" : "bg-gray-200"
+                                  isCompleted
+                                    ? "bg-primary"
+                                    : isCurrent
+                                    ? "bg-primary"
+                                    : "bg-gray-200"
                                 }`}
                               >
-                                <span className={`text-xs font-medium ${
-                                  isCompleted || isCurrent ? "text-white" : "text-gray-600"
-                                }`}>
+                                <span
+                                  className={`text-xs font-medium ${
+                                    isCompleted || isCurrent
+                                      ? "text-white"
+                                      : "text-gray-600"
+                                  }`}
+                                >
                                   {step.id}
                                 </span>
                               </div>
-                              <div className="mt-1 text-[10px] leading-tight" title={step.name}>
-                                {step.name.length > 6 ? `${step.name.slice(0, 6)}...` : step.name}
+                              <div
+                                className="mt-1 text-[10px] leading-tight"
+                                title={step.name}
+                              >
+                                {step.name.length > 6
+                                  ? `${step.name.slice(0, 6)}...`
+                                  : step.name}
                               </div>
                             </div>
                           );
                         })}
                       </div>
                     </div>
-                    
+
                     {selectedEvent.objectives && (
-                      <p className="text-sm text-muted-foreground">{selectedEvent.objectives}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedEvent.objectives}
+                      </p>
                     )}
-                    
+
                     <div className="flex flex-col gap-2 text-sm">
                       {selectedEvent.location && (
                         <div className="flex items-center gap-2">
@@ -158,22 +185,27 @@ export default function ActiveEventsDropdown({ events, isLoading = false }: Acti
                       {selectedEvent.date && (
                         <div className="flex items-center gap-2">
                           <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                          <span>{format(new Date(selectedEvent.date), 'MMM d, yyyy')}</span>
+                          <span>
+                            {format(
+                              new Date(selectedEvent.date),
+                              "MMM d, yyyy"
+                            )}
+                          </span>
                         </div>
                       )}
-                      {selectedEvent.participants && selectedEvent.participants.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span>{selectedEvent.participants.length} participants</span>
-                        </div>
-                      )}
+                      {selectedEvent.participants &&
+                        selectedEvent.participants.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <span>
+                              {selectedEvent.participants.length} participants
+                            </span>
+                          </div>
+                        )}
                     </div>
-                    
+
                     <Link href={`/events/${selectedEvent.id}`}>
-                      <Button 
-                        className="w-full mt-2"
-                        size="sm"
-                      >
+                      <Button className="w-full mt-2" size="sm">
                         View Event Details
                         <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>

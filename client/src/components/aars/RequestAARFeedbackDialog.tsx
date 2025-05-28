@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,15 +8,21 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { toast } from "@/hooks/use-toast";
-import { CheckIcon, CopyIcon, InfoIcon, QrCodeIcon, Share2Icon } from "lucide-react";
+} from "./components/ui/dialog";
+import { Badge } from "./components/ui/badge";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
+import { Switch } from "./components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
+import { toast } from "./hooks/use-toast";
+import {
+  CheckIcon,
+  CopyIcon,
+  InfoIcon,
+  QrCodeIcon,
+  Share2Icon,
+} from "lucide-react";
 import QRCode from "qrcode";
 import { useEffect } from "react";
 
@@ -36,12 +42,12 @@ export function RequestAARFeedbackDialog({
   onOpenChange,
 }: RequestAARFeedbackDialogProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
-  
+
   // Use controlled state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen;
   const setOpen = onOpenChange || setUncontrolledOpen;
   const [notifyParticipants, setNotifyParticipants] = useState(true);
-  const [qrCodeDataURL, setQrCodeDataURL] = useState('');
+  const [qrCodeDataURL, setQrCodeDataURL] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
@@ -57,32 +63,33 @@ export function RequestAARFeedbackDialog({
         width: 200,
         margin: 2,
         color: {
-          dark: '#000',
-          light: '#fff'
-        }
+          dark: "#000",
+          light: "#fff",
+        },
       })
-        .then(url => {
+        .then((url) => {
           setQrCodeDataURL(url);
         })
-        .catch(err => {
-          console.error('Error generating QR code:', err);
+        .catch((err) => {
+          console.error("Error generating QR code:", err);
         });
     }
   }, [submitAarUrl, open, qrCodeDataURL]);
 
   // Handle copying link to clipboard
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(submitAarUrl)
+    navigator.clipboard
+      .writeText(submitAarUrl)
       .then(() => {
         setLinkCopied(true);
         setTimeout(() => setLinkCopied(false), 2000);
       })
-      .catch(err => {
-        console.error('Error copying text: ', err);
+      .catch((err) => {
+        console.error("Error copying text: ", err);
         toast({
           title: "Failed to copy",
           description: "Please copy the URL manually.",
-          variant: "destructive"
+          variant: "destructive",
         });
       });
   };
@@ -92,36 +99,40 @@ export function RequestAARFeedbackDialog({
     if (!notifyParticipants || participants.length === 0) {
       toast({
         title: "No participants to notify",
-        description: "Use the link or QR code to share the AAR submission page."
+        description:
+          "Use the link or QR code to share the AAR submission page.",
       });
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/events/${eventId}/request-aar-feedback`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ notifyParticipants })
-      });
+      const response = await fetch(
+        `/api/events/${eventId}/request-aar-feedback`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notifyParticipants }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to send AAR feedback request');
+        throw new Error("Failed to send AAR feedback request");
       }
 
       setRequestSent(true);
       toast({
         title: "Success",
-        description: "AAR feedback request sent to all participants."
+        description: "AAR feedback request sent to all participants.",
       });
     } catch (error) {
-      console.error('Error sending notification:', error);
+      console.error("Error sending notification:", error);
       toast({
         title: "Error",
         description: "Failed to send notification to participants.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -134,7 +145,8 @@ export function RequestAARFeedbackDialog({
         <DialogHeader>
           <DialogTitle>Request AAR Feedback</DialogTitle>
           <DialogDescription>
-            Share this link with participants to collect After-Action Reviews for {eventTitle}.
+            Share this link with participants to collect After-Action Reviews
+            for {eventTitle}.
           </DialogDescription>
         </DialogHeader>
 
@@ -143,11 +155,13 @@ export function RequestAARFeedbackDialog({
             <TabsTrigger value="link">Share Link</TabsTrigger>
             <TabsTrigger value="qrcode">QR Code</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="link" className="pt-4">
             <div className="flex items-center space-x-2">
               <div className="grid flex-1 gap-2">
-                <Label htmlFor="aarLink" className="sr-only">AAR Submission Link</Label>
+                <Label htmlFor="aarLink" className="sr-only">
+                  AAR Submission Link
+                </Label>
                 <Input
                   id="aarLink"
                   defaultValue={submitAarUrl}
@@ -156,15 +170,19 @@ export function RequestAARFeedbackDialog({
                 />
               </div>
               <Button type="button" size="sm" onClick={handleCopyLink}>
-                {linkCopied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
+                {linkCopied ? (
+                  <CheckIcon className="h-4 w-4" />
+                ) : (
+                  <CopyIcon className="h-4 w-4" />
+                )}
               </Button>
             </div>
 
             <div className="mt-4">
               <div className="flex items-center space-x-2">
-                <Switch 
-                  id="notifyParticipants" 
-                  checked={notifyParticipants} 
+                <Switch
+                  id="notifyParticipants"
+                  checked={notifyParticipants}
                   onCheckedChange={setNotifyParticipants}
                 />
                 <Label htmlFor="notifyParticipants">
@@ -173,13 +191,16 @@ export function RequestAARFeedbackDialog({
               </div>
             </div>
           </TabsContent>
-          
-          <TabsContent value="qrcode" className="flex flex-col items-center justify-center pt-4">
+
+          <TabsContent
+            value="qrcode"
+            className="flex flex-col items-center justify-center pt-4"
+          >
             {qrCodeDataURL ? (
               <div className="bg-white p-4 rounded-md">
-                <img 
-                  src={qrCodeDataURL} 
-                  alt="QR Code for AAR Submission" 
+                <img
+                  src={qrCodeDataURL}
+                  alt="QR Code for AAR Submission"
                   className="w-48 h-48"
                 />
               </div>
@@ -199,7 +220,8 @@ export function RequestAARFeedbackDialog({
             <InfoIcon className="h-4 w-4" />
             <AlertTitle>No participants added</AlertTitle>
             <AlertDescription>
-              This event has no registered participants. Anyone with the link will be able to submit an AAR.
+              This event has no registered participants. Anyone with the link
+              will be able to submit an AAR.
             </AlertDescription>
           </Alert>
         )}
@@ -226,7 +248,12 @@ export function RequestAARFeedbackDialog({
             </Button>
             <Button
               onClick={handleSendRequestToParticipants}
-              disabled={loading || requestSent || participants.length === 0 || !notifyParticipants}
+              disabled={
+                loading ||
+                requestSent ||
+                participants.length === 0 ||
+                !notifyParticipants
+              }
             >
               {loading ? "Sending..." : "Send Request"}
             </Button>

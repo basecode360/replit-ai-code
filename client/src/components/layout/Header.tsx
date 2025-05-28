@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "./components/ui/sheet";
 import { Menu, Search, X, DollarSign } from "lucide-react";
 import Sidebar from "./Sidebar";
 import {
@@ -17,8 +13,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from "./components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "./components/ui/avatar";
 import NotificationDropdown from "./NotificationDropdown";
 
 export default function Header() {
@@ -95,7 +91,11 @@ export default function Header() {
         {/* User menu */}
         <div className="flex items-center gap-4">
           <Link href="/pricing">
-            <Button variant="ghost" size="sm" className="hidden md:flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden md:flex items-center"
+            >
               <DollarSign className="h-4 w-4 mr-1" />
               Pricing
             </Button>

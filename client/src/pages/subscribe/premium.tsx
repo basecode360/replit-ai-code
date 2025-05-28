@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "./components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/lib/auth-provider";
+} from "./components/ui/card";
+import { useToast } from "./hooks/use-toast";
+import { useAuth } from "./lib/auth-provider";
 
 export default function SubscribePremium() {
   const { toast } = useToast();
@@ -21,7 +21,7 @@ export default function SubscribePremium() {
   const { user, isLoading } = useAuth();
   const [isYearlyBilling, setIsYearlyBilling] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  
+
   useEffect(() => {
     // Redirect to login if not authenticated
     if (!isLoading && !user) {
@@ -36,24 +36,25 @@ export default function SubscribePremium() {
 
   const handleSubscribe = async () => {
     setIsPending(true);
-    
+
     try {
       // Here we would initiate the subscription process
       // For now, we'll just show a toast and navigate back
-      
+
       setTimeout(() => {
         toast({
           title: "Coming Soon",
-          description: "Premium subscription functionality will be available soon!",
+          description:
+            "Premium subscription functionality will be available soon!",
         });
         setIsPending(false);
       }, 1500);
-      
     } catch (error) {
       console.error("Subscription error:", error);
       toast({
         title: "Subscription Failed",
-        description: "There was an error processing your subscription. Please try again.",
+        description:
+          "There was an error processing your subscription. Please try again.",
         variant: "destructive",
       });
       setIsPending(false);
@@ -72,12 +73,12 @@ export default function SubscribePremium() {
     <>
       <Helmet>
         <title>Subscribe to Premium Plan | GreenBookAAR</title>
-        <meta 
-          name="description" 
+        <meta
+          name="description"
           content="Subscribe to GreenBookAAR Premium Plan at $14.99/month for advanced AI analysis features and multi-unit support."
         />
       </Helmet>
-      
+
       <div className="container max-w-2xl py-16">
         <div className="space-y-8">
           <div className="text-center">
@@ -86,7 +87,7 @@ export default function SubscribePremium() {
               Access advanced features with GreenBookAAR Premium
             </p>
           </div>
-          
+
           <Card className="border-primary">
             <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-medium rounded-bl-lg">
               RECOMMENDED
@@ -97,10 +98,16 @@ export default function SubscribePremium() {
                 For battalions and larger units with advanced needs
               </CardDescription>
               <div className="mt-2">
-                <span className="text-3xl font-bold">{isYearlyBilling ? "$149.90" : "$14.99"}</span>
-                <span className="text-muted-foreground ml-1">{isYearlyBilling ? "/year" : "/month"}</span>
+                <span className="text-3xl font-bold">
+                  {isYearlyBilling ? "$149.90" : "$14.99"}
+                </span>
+                <span className="text-muted-foreground ml-1">
+                  {isYearlyBilling ? "/year" : "/month"}
+                </span>
                 {isYearlyBilling && (
-                  <span className="ml-2 text-sm text-green-600">(Save $29.98)</span>
+                  <span className="ml-2 text-sm text-green-600">
+                    (Save $29.98)
+                  </span>
                 )}
               </div>
             </CardHeader>
@@ -109,9 +116,17 @@ export default function SubscribePremium() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Billing Period</span>
                   <div className="flex items-center gap-2">
-                    <span className={!isYearlyBilling ? "font-medium" : "text-muted-foreground"}>Monthly</span>
-                    <Button 
-                      variant="outline" 
+                    <span
+                      className={
+                        !isYearlyBilling
+                          ? "font-medium"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      Monthly
+                    </span>
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="relative px-8 h-7 transition-all"
                       onClick={() => setIsYearlyBilling(!isYearlyBilling)}
@@ -121,12 +136,22 @@ export default function SubscribePremium() {
                           isYearlyBilling ? "translate-x-full" : ""
                         }`}
                       />
-                      <span className="block relative z-10 text-xs text-transparent">Toggle</span>
+                      <span className="block relative z-10 text-xs text-transparent">
+                        Toggle
+                      </span>
                     </Button>
-                    <span className={isYearlyBilling ? "font-medium" : "text-muted-foreground"}>Yearly</span>
+                    <span
+                      className={
+                        isYearlyBilling
+                          ? "font-medium"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      Yearly
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="py-4 space-y-2">
                   <h3 className="font-medium">Plan Includes:</h3>
                   <ul className="space-y-2 text-sm">
@@ -183,8 +208,8 @@ export default function SubscribePremium() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={handleSubscribe}
                 disabled={isPending}
               >
@@ -194,12 +219,14 @@ export default function SubscribePremium() {
                     Processing...
                   </>
                 ) : (
-                  `Subscribe for ${isYearlyBilling ? "$149.90/year" : "$14.99/month"}`
+                  `Subscribe for ${
+                    isYearlyBilling ? "$149.90/year" : "$14.99/month"
+                  }`
                 )}
               </Button>
-              <Button 
-                variant="ghost" 
-                className="text-sm" 
+              <Button
+                variant="ghost"
+                className="text-sm"
                 onClick={() => navigate("/pricing")}
               >
                 Back to pricing

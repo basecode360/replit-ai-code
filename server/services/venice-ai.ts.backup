@@ -1,4 +1,4 @@
-import { VeniceAnalysis, AAR, AARItemType } from '../../shared/schema';
+import { VeniceAnalysis, AAR, AARItemType } from '../@shared/schema';
 
 /**
  * Venice AI Service

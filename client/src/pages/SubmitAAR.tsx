@@ -1,6 +1,7 @@
 import { useParams } from "wouter";
 import { Helmet } from "react-helmet";
-import AARForm from "@/components/aars/AARForm";
+import AARForm from "../components/aars/AARForm"
+
 
 export default function SubmitAAR() {
   const { eventId } = useParams();
@@ -10,9 +11,12 @@ export default function SubmitAAR() {
     <>
       <Helmet>
         <title>Submit AAR - Military AAR Management System</title>
-        <meta name="description" content="Submit an After-Action Review (AAR) for a completed training event to document lessons learned and improvement opportunities." />
+        <meta
+          name="description"
+          content="Submit an After-Action Review (AAR) for a completed training event to document lessons learned and improvement opportunities."
+        />
       </Helmet>
-      
+
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-condensed font-bold text-gray-900">
@@ -22,7 +26,7 @@ export default function SubmitAAR() {
             Document lessons learned from your training event
           </p>
         </div>
-        
+
         <AARForm eventId={eventIdNumber} />
       </div>
     </>

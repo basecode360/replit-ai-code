@@ -1,35 +1,35 @@
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { format } from "date-fns";
-import { 
-  Calendar, 
-  FileText, 
-  Users, 
+import {
+  Calendar,
+  FileText,
+  Users,
   MapPin,
   ArrowLeft,
   Printer,
   Download,
-  User
+  User,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import { Button } from "./components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "./components/ui/card";
+import { Badge } from "./components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { Separator } from "./components/ui/separator";
+import { Skeleton } from "./components/ui/skeleton";
 
 export default function AARDetail() {
   const { user } = useAuth();
   const params = useParams();
-  const aarId = parseInt(params.id || '0');
+  const aarId = parseInt(params.id || "0");
 
   // Get the AAR details
   const { data: aar, isLoading: isAARLoading } = useQuery({
@@ -51,7 +51,10 @@ export default function AARDetail() {
     queryFn: async () => {
       const res = await fetch(`/api/events/${aar.eventId}`);
       if (!res.ok) {
-        console.error(`Failed to fetch Event #${aar.eventId}:`, await res.text());
+        console.error(
+          `Failed to fetch Event #${aar.eventId}:`,
+          await res.text()
+        );
         throw new Error(`Failed to fetch Event #${aar.eventId}`);
       }
       return await res.json();
@@ -61,11 +64,11 @@ export default function AARDetail() {
 
   // Get creator info
   const { data: creator, isLoading: isCreatorLoading } = useQuery({
-    queryKey: ['/api/users', aar?.createdBy],
+    queryKey: ["/api/users", aar?.createdBy],
     queryFn: async () => {
-      const res = await fetch('/api/users');
+      const res = await fetch("/api/users");
       if (!res.ok) {
-        throw new Error('Failed to fetch users');
+        throw new Error("Failed to fetch users");
       }
       const users = await res.json();
       return users.find((u: any) => u.id === aar.createdBy);
@@ -74,33 +77,35 @@ export default function AARDetail() {
   });
 
   const isLoading = isAARLoading || isEventLoading || isCreatorLoading;
-  
+
   // Extract planned and actual outcomes from AAR items
   const getAARMetadata = () => {
     if (!aar) return { plannedOutcome: null, actualOutcome: null };
-    
+
     // Look for items with 'aar_metadata' tag
     const sustainItems = aar.sustainItems || [];
-    const metadataItem = sustainItems.find((item: any) => 
-      item.tags && 
-      Array.isArray(item.tags) && 
-      item.tags.includes('aar_metadata')
+    const metadataItem = sustainItems.find(
+      (item: any) =>
+        item.tags &&
+        Array.isArray(item.tags) &&
+        item.tags.includes("aar_metadata")
     );
-    
+
     // If we found a metadata item, extract the planned and actual outcomes from the text
     if (metadataItem) {
-      const text = metadataItem.text || '';
-      
+      const text = metadataItem.text || "";
+
       // Try to parse out the planned and actual outcomes from the text
       const plannedMatch = /Planned outcome: (.*?)(\n|$)/.exec(text);
       const actualMatch = /Actual outcome: (.*?)(\n|$)/.exec(text);
-      
+
       return {
-        plannedOutcome: plannedMatch && plannedMatch[1] ? plannedMatch[1] : null,
-        actualOutcome: actualMatch && actualMatch[1] ? actualMatch[1] : null
+        plannedOutcome:
+          plannedMatch && plannedMatch[1] ? plannedMatch[1] : null,
+        actualOutcome: actualMatch && actualMatch[1] ? actualMatch[1] : null,
       };
     }
-    
+
     return { plannedOutcome: null, actualOutcome: null };
   };
 
@@ -159,12 +164,7 @@ export default function AARDetail() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="mr-2"
-            asChild
-          >
+          <Button variant="ghost" size="icon" className="mr-2" asChild>
             <Link href="/aars">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -195,14 +195,15 @@ export default function AARDetail() {
         <CardHeader className="pb-4">
           <CardTitle>AAR Information</CardTitle>
           <CardDescription>
-            Created by {creatorName} on {format(new Date(aar.createdAt), 'MMM d, yyyy')}
+            Created by {creatorName} on{" "}
+            {format(new Date(aar.createdAt), "MMM d, yyyy")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-6 flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center text-muted-foreground">
               <Calendar className="mr-2 h-4 w-4" />
-              {format(eventDate, 'MMM d, yyyy')}
+              {format(eventDate, "MMM d, yyyy")}
             </div>
             <div className="flex items-center text-muted-foreground">
               <MapPin className="mr-2 h-4 w-4" />
@@ -223,7 +224,7 @@ export default function AARDetail() {
               {creatorName}
             </Badge>
           </div>
-          
+
           {/* Planned and Actual Outcomes */}
           {(() => {
             const { plannedOutcome, actualOutcome } = getAARMetadata();
@@ -232,13 +233,17 @@ export default function AARDetail() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   {plannedOutcome && (
                     <div className="p-4 bg-muted rounded-md">
-                      <h4 className="font-medium mb-2">What was supposed to happen</h4>
+                      <h4 className="font-medium mb-2">
+                        What was supposed to happen
+                      </h4>
                       <p className="text-sm">{plannedOutcome}</p>
                     </div>
                   )}
                   {actualOutcome && (
                     <div className="p-4 bg-muted rounded-md">
-                      <h4 className="font-medium mb-2">What actually happened</h4>
+                      <h4 className="font-medium mb-2">
+                        What actually happened
+                      </h4>
                       <p className="text-sm">{actualOutcome}</p>
                     </div>
                   )}
@@ -257,13 +262,20 @@ export default function AARDetail() {
           <TabsTrigger value="improve">Improve</TabsTrigger>
           <TabsTrigger value="action">Action Items</TabsTrigger>
         </TabsList>
-        <TabsContent value="sustain" className="p-4 bg-background rounded-md border">
+        <TabsContent
+          value="sustain"
+          className="p-4 bg-background rounded-md border"
+        >
           <h2 className="text-lg font-semibold mb-4">What Went Well</h2>
           <ul className="space-y-5">
             {aar.sustainItems
               .filter((item: any) => {
                 // Filter out items that have the aar_metadata tag
-                return !(item.tags && Array.isArray(item.tags) && item.tags.includes('aar_metadata'));
+                return !(
+                  item.tags &&
+                  Array.isArray(item.tags) &&
+                  item.tags.includes("aar_metadata")
+                );
               })
               .map((item: any, index: number) => (
                 <li key={`sustain-${index}`} className="pt-2">
@@ -276,7 +288,11 @@ export default function AARDetail() {
                     {item.tags && item.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {item.tags.map((tag: string, tagIdx: number) => (
-                          <Badge key={`tag-${tagIdx}`} variant="outline" className="text-xs px-1 py-0">
+                          <Badge
+                            key={`tag-${tagIdx}`}
+                            variant="outline"
+                            className="text-xs px-1 py-0"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -285,14 +301,24 @@ export default function AARDetail() {
                   </div>
                 </li>
               ))}
-            {aar.sustainItems.filter((item: any) => 
-              !(item.tags && Array.isArray(item.tags) && item.tags.includes('aar_metadata'))
+            {aar.sustainItems.filter(
+              (item: any) =>
+                !(
+                  item.tags &&
+                  Array.isArray(item.tags) &&
+                  item.tags.includes("aar_metadata")
+                )
             ).length === 0 && (
-              <p className="text-sm text-muted-foreground">No sustain items were recorded.</p>
+              <p className="text-sm text-muted-foreground">
+                No sustain items were recorded.
+              </p>
             )}
           </ul>
         </TabsContent>
-        <TabsContent value="improve" className="p-4 bg-background rounded-md border">
+        <TabsContent
+          value="improve"
+          className="p-4 bg-background rounded-md border"
+        >
           <h2 className="text-lg font-semibold mb-4">Areas for Improvement</h2>
           <ul className="space-y-5">
             {aar.improveItems.map((item: any, index: number) => (
@@ -306,7 +332,11 @@ export default function AARDetail() {
                   {item.tags && item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.tags.map((tag: string, tagIdx: number) => (
-                        <Badge key={`tag-${tagIdx}`} variant="outline" className="text-xs px-1 py-0">
+                        <Badge
+                          key={`tag-${tagIdx}`}
+                          variant="outline"
+                          className="text-xs px-1 py-0"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -316,11 +346,16 @@ export default function AARDetail() {
               </li>
             ))}
             {aar.improveItems.length === 0 && (
-              <p className="text-sm text-muted-foreground">No improvement items were recorded.</p>
+              <p className="text-sm text-muted-foreground">
+                No improvement items were recorded.
+              </p>
             )}
           </ul>
         </TabsContent>
-        <TabsContent value="action" className="p-4 bg-background rounded-md border">
+        <TabsContent
+          value="action"
+          className="p-4 bg-background rounded-md border"
+        >
           <h2 className="text-lg font-semibold mb-4">Action Items</h2>
           <ul className="space-y-5">
             {aar.actionItems.map((item: any, index: number) => (
@@ -334,7 +369,11 @@ export default function AARDetail() {
                   {item.tags && item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.tags.map((tag: string, tagIdx: number) => (
-                        <Badge key={`tag-${tagIdx}`} variant="outline" className="text-xs px-1 py-0">
+                        <Badge
+                          key={`tag-${tagIdx}`}
+                          variant="outline"
+                          className="text-xs px-1 py-0"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -344,7 +383,9 @@ export default function AARDetail() {
               </li>
             ))}
             {aar.actionItems.length === 0 && (
-              <p className="text-sm text-muted-foreground">No action items were recorded.</p>
+              <p className="text-sm text-muted-foreground">
+                No action items were recorded.
+              </p>
             )}
           </ul>
         </TabsContent>
@@ -357,12 +398,16 @@ export default function AARDetail() {
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <h3 className="font-medium mb-2">Objectives</h3>
-              <p className="text-sm text-muted-foreground">{event.objectives}</p>
+              <p className="text-sm text-muted-foreground">
+                {event.objectives}
+              </p>
             </div>
             {event.resources && (
               <div>
                 <h3 className="font-medium mb-2">Resources</h3>
-                <p className="text-sm text-muted-foreground">{event.resources}</p>
+                <p className="text-sm text-muted-foreground">
+                  {event.resources}
+                </p>
               </div>
             )}
           </div>

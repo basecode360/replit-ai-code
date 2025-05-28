@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "../hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -8,13 +8,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from "../components/ui/table";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Trash, Plus, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/lib/auth-provider";
+import { apiRequest } from "../lib/queryClient";
+import { useAuth } from "../lib/auth-provider";
 import { Link } from "wouter";
 
 const queryClient = new QueryClient();
@@ -39,8 +39,12 @@ export default function EventsAdmin() {
   }
 
   // Fetch all events
-  const { data: events = [], isLoading, refetch } = useQuery<Event[]>({
-    queryKey: ['/api/events'],
+  const {
+    data: events = [],
+    isLoading,
+    refetch,
+  } = useQuery<Event[]>({
+    queryKey: ["/api/events"],
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -48,17 +52,14 @@ export default function EventsAdmin() {
   const deleteMutation = useMutation({
     mutationFn: async (eventId: number) => {
       // Update local state to show loading for this event
-      setIsDeleting(prev => ({ ...prev, [eventId]: true }));
-      
-      const response = await apiRequest(
-        'DELETE',
-        `/api/events/${eventId}`
-      );
+      setIsDeleting((prev) => ({ ...prev, [eventId]: true }));
+
+      const response = await apiRequest("DELETE", `/api/events/${eventId}`);
       return response;
     },
     onSuccess: () => {
       // Invalidate and refetch the events
-      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
       refetch();
       toast({
         title: "Event Deleted",
@@ -75,17 +76,21 @@ export default function EventsAdmin() {
     },
     onSettled: (_, __, eventId) => {
       // Clear loading state for this event
-      setIsDeleting(prev => {
+      setIsDeleting((prev) => {
         const newState = { ...prev };
         delete newState[eventId as number];
         return newState;
       });
-    }
+    },
   });
 
   // Handle delete
   const handleDelete = (eventId: number) => {
-    if (confirm("Are you sure you want to delete this event? This cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this event? This cannot be undone."
+      )
+    ) {
       deleteMutation.mutate(eventId);
     }
   };
@@ -132,19 +137,24 @@ export default function EventsAdmin() {
                   {events.map((event: any) => (
                     <TableRow key={event.id}>
                       <TableCell className="font-medium">
-                        <Link href={`/events/${event.id}`} className="text-blue-600 hover:underline">
+                        <Link
+                          href={`/events/${event.id}`}
+                          className="text-blue-600 hover:underline"
+                        >
                           {event.title}
                         </Link>
                       </TableCell>
                       <TableCell>{event.eventType}</TableCell>
                       <TableCell>{event.trainingEchelon}</TableCell>
                       <TableCell>
-                        {event.executionDate 
-                          ? format(new Date(event.executionDate), "PPP") 
+                        {event.executionDate
+                          ? format(new Date(event.executionDate), "PPP")
                           : "Not scheduled"}
                       </TableCell>
                       <TableCell>
-                        {event.createdBy === user?.id ? "You" : `User #${event.createdBy}`}
+                        {event.createdBy === user?.id
+                          ? "You"
+                          : `User #${event.createdBy}`}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button

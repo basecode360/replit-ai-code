@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
+import { getQueryFn } from "./lib/queryClient";
 import { Unit, User } from "@shared/schema";
-import { useAuth } from "@/lib/auth-provider";
+import { useAuth } from "./lib/auth-provider";
 
 // Type for hierarchy constants
 interface HierarchyConstants {
@@ -17,30 +17,26 @@ export function useHierarchy() {
   const { user } = useAuth();
 
   // Get hierarchy constants
-  const { 
-    data: constants, 
-    isLoading: isLoadingConstants 
-  } = useQuery<HierarchyConstants>({
-    queryKey: ["/api/hierarchy/constants"],
-    queryFn: getQueryFn({ on401: "throw" }),
-    enabled: !!user,
-  });
+  const { data: constants, isLoading: isLoadingConstants } =
+    useQuery<HierarchyConstants>({
+      queryKey: ["/api/hierarchy/constants"],
+      queryFn: getQueryFn({ on401: "throw" }),
+      enabled: !!user,
+    });
 
   // Get units accessible to the current user
-  const {
-    data: accessibleUnits = [],
-    isLoading: isLoadingUnits,
-  } = useQuery<Unit[]>({
+  const { data: accessibleUnits = [], isLoading: isLoadingUnits } = useQuery<
+    Unit[]
+  >({
     queryKey: ["/api/hierarchy/accessible-units"],
     queryFn: getQueryFn({ on401: "throw" }),
     enabled: !!user,
   });
 
   // Get users accessible to the current user
-  const {
-    data: accessibleUsers = [],
-    isLoading: isLoadingUsers,
-  } = useQuery<User[]>({
+  const { data: accessibleUsers = [], isLoading: isLoadingUsers } = useQuery<
+    User[]
+  >({
     queryKey: ["/api/hierarchy/accessible-users"],
     queryFn: getQueryFn({ on401: "throw" }),
     enabled: !!user,
@@ -56,7 +52,7 @@ export function useHierarchy() {
     if (!user || !accessibleUnits) {
       return false;
     }
-    
+
     return accessibleUnits.some((unit) => unit.id === unitId);
   };
 
@@ -67,7 +63,7 @@ export function useHierarchy() {
     if (!user || !accessibleUsers) {
       return false;
     }
-    
+
     return accessibleUsers.some((u) => u.id === userId);
   };
 
@@ -78,7 +74,7 @@ export function useHierarchy() {
     if (!accessibleUnits) {
       return [];
     }
-    
+
     return accessibleUnits.filter((unit) => unit.parentId === unitId);
   };
 
@@ -89,7 +85,7 @@ export function useHierarchy() {
     if (!accessibleUsers) {
       return [];
     }
-    
+
     return accessibleUsers.filter((user) => user.unitId === unitId);
   };
 
@@ -101,14 +97,14 @@ export function useHierarchy() {
     if (!unitUsers.length || !constants) {
       return undefined;
     }
-    
+
     // Role priority (higher index = higher authority)
     const rolePriority = Object.values(constants.roles);
-    
+
     return unitUsers.reduce((leader, currentUser) => {
       const leaderRoleIndex = rolePriority.indexOf(leader.role);
       const currentRoleIndex = rolePriority.indexOf(currentUser.role);
-      
+
       return currentRoleIndex > leaderRoleIndex ? currentUser : leader;
     }, unitUsers[0]);
   };
