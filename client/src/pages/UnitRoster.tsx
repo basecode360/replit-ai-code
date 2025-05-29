@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { User, Unit } from "@shared/schema";
-import { apiRequest } from "./lib/queryClient";
-import { useAuth } from "./lib/auth-provider";
-import { useHierarchy } from "./hooks/use-hierarchy";
+import { apiRequest } from "../lib/queryClient";
+import { useAuth } from "../lib/auth-provider";
+import { useHierarchy } from "../hooks/use-hierarchy";
 import { Link, useLocation } from "wouter";
 import {
   Loader2,
@@ -19,19 +19,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Avatar, AvatarFallback } from "./components/ui/avatar";
-import { Badge } from "./components/ui/badge";
-import { Input } from "./components/ui/input";
-import { Button } from "./components/ui/button";
+} from "../components/ui/card";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { ScrollArea } from "./components/ui/scroll-area";
+} from "../components/ui/select";
+import { ScrollArea } from "../components/ui/scroll-area";
 
 export default function UnitRoster() {
   const { user } = useAuth();

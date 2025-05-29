@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useState, useEffect } from "react";
 import {
   format,
@@ -30,25 +32,31 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { cn } from "./lib/utils";
-import { Button } from "./components/ui/button";
+import { cn } from "../../lib/utils";
+
+import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Badge } from "./components/ui/badge";
-import { ScrollArea } from "./components/ui/scroll-area";
+} from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { ScrollArea } from "../../components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./components/ui/tooltip";
-import { Event, Unit, User } from "./lib/types";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+} from "../../components/ui/tooltip";
+import { Event, Unit, User } from "../../lib/types";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
 import { Link } from "wouter";
 import {
   Select,
@@ -56,17 +64,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
+} from "../../components/ui/select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "./components/ui/popover";
-import { Checkbox } from "./components/ui/checkbox";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
+} from "../../components/ui/popover";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 import { useQuery } from "@tanstack/react-query";
-import { useHierarchy } from "./hooks/use-hierarchy";
+import { useHierarchy } from "../../hooks/use-hierarchy";
 
 interface EventCalendarProps {
   events: Event[];

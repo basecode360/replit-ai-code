@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { ChevronLeft, ChevronRight, ListOrdered } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -9,7 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./components/ui/sheet";
+} from "../../components/ui/sheet";
 
 // Define the tour steps with their routes and descriptions
 const tourSteps = [

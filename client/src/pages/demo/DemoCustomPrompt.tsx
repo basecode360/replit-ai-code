@@ -6,16 +6,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Textarea } from "./components/ui/textarea";
-import { Button } from "./components/ui/button";
+} from "../../components/ui/card";
+import { Textarea } from "../../components/ui/textarea";
+import { Button } from "../../components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./components/ui/accordion";
-import GuidedTour from "./components/demo/GuidedTour";
+} from "../../components/ui/accordion";
+import GuidedTour from "../../components/demo/GuidedTour";
 
 // Example prompts that users might ask
 const examplePrompts = [

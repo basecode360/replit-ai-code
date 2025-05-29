@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { User, Unit } from "@shared/schema";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "./lib/queryClient";
-import { useToast } from "./hooks/use-toast";
-import { useHierarchy } from "./hooks/use-hierarchy";
+import { apiRequest } from "../../lib/queryClient";
+import { useToast } from "../../hooks/use-toast";
+import { useHierarchy } from "../../hooks/use-hierarchy";
 
 import {
   Dialog,
@@ -12,19 +12,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "./components/ui/dialog";
+} from "../../components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { Button } from "./components/ui/button";
-import { Label } from "./components/ui/label";
+} from "../../components/ui/select";
+import { Button } from "../../components/ui/button";
+import { Label } from "../../components/ui/label";
 import { Loader2, Users, Building, PlusCircle, Trash2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
-import { Badge } from "./components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Badge } from "../../components/ui/badge";
 import {
   Card,
   CardContent,
@@ -32,7 +32,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
+} from "../../components/ui/card";
 
 // Assignment types
 const ASSIGNMENT_TYPES = {

@@ -1,6 +1,7 @@
+import React from "react";
 import { useState, useEffect } from "react";
-import { useAuth } from "./lib/auth-provider";
-import { LoginCredentials, RegisterData } from "./lib/auth-service";
+import { useAuth } from "../lib/auth-provider";
+import { LoginCredentials, RegisterData } from "../lib/auth-service";
 import { useLocation, Link } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -14,8 +15,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Button } from "./components/ui/button";
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,18 +25,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
-import { Input } from "./components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
-import { Separator } from "./components/ui/separator";
-import { Switch } from "./components/ui/switch";
+} from "../components/ui/form";
+import { Input } from "../components/ui/input";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Separator } from "../components/ui/separator";
+import { Switch } from "../components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
+} from "../components/ui/select";
 import {
   Shield,
   ChevronRight,

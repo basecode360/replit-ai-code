@@ -5,10 +5,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Badge } from "./components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
-import GuidedTour from "./components/demo/GuidedTour";
+} from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import GuidedTour from "../../components/demo/GuidedTour";
 
 // Demo sample events
 const demoEvents = [

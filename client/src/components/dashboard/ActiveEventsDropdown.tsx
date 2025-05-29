@@ -8,14 +8,14 @@ import {
   CalendarDays,
   Users,
 } from "lucide-react";
-import { trainingStepInfo } from "./lib/types";
+import { trainingStepInfo } from "../../lib/types";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
+} from "../../components/ui/card";
 import {
   Select,
   SelectContent,
@@ -24,11 +24,11 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { Button } from "./components/ui/button";
-import { Badge } from "./components/ui/badge";
+} from "../../components/ui/select";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
 import { format } from "date-fns";
-import { Event } from "./lib/types";
+import { Event } from "../../lib/types";
 
 interface ActiveEventsDropdownProps {
   events: Event[];

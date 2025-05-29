@@ -6,14 +6,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Button } from "./components/ui/button";
-import { Textarea } from "./components/ui/textarea";
-import { useToast } from "./hooks/use-toast";
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Textarea } from "../../components/ui/textarea";
+import { useToast } from "../../hooks/use-toast";
 import { Loader2, ZapIcon } from "lucide-react";
-import { ScrollArea } from "./components/ui/scroll-area";
-import { Badge } from "./components/ui/badge";
-import { Separator } from "./components/ui/separator";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import { Badge } from "../../components/ui/badge";
+import { Separator } from "../../components/ui/separator";
 
 interface AnalysisTabProps {
   userId: number;

@@ -6,12 +6,12 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "./components/ui/card";
-import { Textarea } from "./components/ui/textarea";
-import { Button } from "./components/ui/button";
+} from "../../components/ui/card";
+import { Textarea } from "../../components/ui/textarea";
+import { Button } from "../../components/ui/button";
 import { Loader2, BrainCircuit } from "lucide-react";
-import { useToast } from "./hooks/use-toast";
-import { VeniceAnalysis } from "./lib/types";
+import { useToast } from "../../hooks/use-toast";
+import { VeniceAnalysis } from "../../lib/types";
 
 interface VeniceAIPromptProps {
   unitId: number;

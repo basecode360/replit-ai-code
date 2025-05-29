@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, QrCode } from "lucide-react";
-import { useToast } from "./hooks/use-toast";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Card, CardContent, CardHeader } from "./components/ui/card";
+import { useToast } from "../../hooks/use-toast";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "./components/ui/dialog";
+} from "../../components/ui/dialog";
 
 interface ReferralLinkProps {
   unitId: number;

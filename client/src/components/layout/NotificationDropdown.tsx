@@ -1,7 +1,9 @@
+import React from "react";
+
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
-import { Badge } from "./components/ui/badge";
-import { useToast } from "./hooks/use-toast";
+} from "../../components/ui/dropdown-menu";
+import { Badge } from "../../components/ui/badge";
+import { useToast } from "../../hooks/use-toast";
 import { useLocation } from "wouter";
 
 interface Notification {

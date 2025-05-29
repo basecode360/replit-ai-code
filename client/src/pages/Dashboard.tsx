@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";

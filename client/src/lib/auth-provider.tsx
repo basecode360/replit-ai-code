@@ -1,13 +1,20 @@
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import React from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
 import { useToast } from "../hooks/use-toast";
 import { useLocation } from "wouter";
-import { 
-  User, 
-  LoginCredentials, 
-  RegisterData, 
-  authService 
+import {
+  User,
+  LoginCredentials,
+  RegisterData,
+  authService,
 } from "./auth-service";
 
 // Define clear AuthContext type that matches the actual implementation
@@ -56,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refetchInterval: false,
     gcTime: Infinity,
   });
-  
+
   // Update user when data changes
   useEffect(() => {
     if (data) {
@@ -77,19 +84,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Login success:", data);
       // Set the user in state first
       setUser(data);
-      
+
       // Update the cached query data
       queryClient.setQueryData(["/api/auth/me"], data);
-      
+
       // Force a refresh of all auth-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      
+
       // Show success toast
       toast({
         title: "Logged in successfully",
         description: `Welcome back, ${data.name}!`,
       });
-      
+
       // Add a small delay to ensure state is updated before redirect
       setTimeout(() => {
         console.log("Redirecting to dashboard after login");
@@ -144,10 +151,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Registration successful",
         description: "You can now log in",
       });
-      
+
       // Try to automatically log in after registration
       if (registerMutation.variables) {
-        const { username, password } = registerMutation.variables as LoginCredentials;
+        const { username, password } =
+          registerMutation.variables as LoginCredentials;
         loginMutation.mutate({ username, password });
       } else {
         navigate("/auth");
@@ -163,7 +171,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       await loginMutation.mutateAsync({ username, password });
       return true;
@@ -194,7 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         register,
         loginMutation,
-        logoutMutation, 
+        logoutMutation,
         registerMutation,
       }}
     >

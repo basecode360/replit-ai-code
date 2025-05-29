@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "./components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { useToast } from "./hooks/use-toast";
-import { useAuth } from "./lib/auth-provider";
+} from "../../components/ui/card";
+import { useToast } from "../../hooks/use-toast";
+import { useAuth } from "../../lib/auth-provider";
 
 export default function SubscribePremium() {
   const { toast } = useToast();

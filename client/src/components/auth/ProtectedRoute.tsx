@@ -1,3 +1,4 @@
+import React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "../../lib/auth-provider";

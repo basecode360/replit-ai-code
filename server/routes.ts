@@ -68,7 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.header("Content-Type", "application/json");
     next();
   });
-
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  
   // Sets up authentication routes (/api/login, /api/logout, /api/user)
   setupAuth(app);
 

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "./lib/queryClient";
+import { getQueryFn } from "../lib/queryClient";
 import { Unit, User } from "@shared/schema";
-import { useAuth } from "./lib/auth-provider";
+import { useAuth } from "../lib/auth-provider";
 
 // Type for hierarchy constants
 interface HierarchyConstants {

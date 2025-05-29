@@ -4,9 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { apiRequest } from "./lib/queryClient";
-import { queryClient } from "./lib/queryClient";
-import { useToast } from "./hooks/use-toast";
+import { apiRequest } from "../../lib/queryClient";
+import { queryClient } from "../../lib/queryClient";
+import { useToast } from "../../hooks/use-toast";
 import { format } from "date-fns";
 import {
   CalendarIcon,
@@ -16,7 +16,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useAuth } from "./lib/auth-provider";
+import { useAuth } from "../../lib/auth-provider";
 
 // 8-Step Training Model
 const trainingSteps = [
@@ -38,7 +38,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
+} from "../../components/ui/form";
 
 import {
   Select,
@@ -46,28 +46,29 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
+} from "../../components/ui/select";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./components/ui/accordion";
+} from "../../components/ui/accordion";
 
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import { Checkbox } from "./components/ui/checkbox";
-import { Card, CardContent, CardHeader } from "./components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "./components/ui/popover";
-import { Calendar } from "./components/ui/calendar";
-import { cn } from "./lib/utils";
-import { Badge } from "./components/ui/badge";
+} from "../../components/ui/popover";
+import { Calendar } from "../../components/ui/calendar";
+import { cn } from "../../lib/utils";
+
+import { Badge } from "../../components/ui/badge";
 
 // Form schema for event creation
 const eventFormSchema = z

@@ -1,7 +1,9 @@
-import { Card, CardHeader, CardContent } from "./components/ui/card";
+import React from "react";
+
+import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Info, AlertTriangle, CheckCircle, FileQuestion } from "lucide-react";
-import { VeniceAnalysis } from "./lib/types";
-import { Button } from "./components/ui/button";
+import { VeniceAnalysis } from "../../lib/types";
+import { Button } from "../../components/ui/button";
 import { Link } from "wouter";
 
 interface VeniceInsightsProps {

@@ -64,7 +64,7 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<User> {
     console.log(`Attempting login for user: ${credentials.username}`);
     const response = await apiRequest("POST", "/api/auth/login", credentials);
-    console.log("Login response status:", response.status);
+    console.log("Login response status:", response);
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

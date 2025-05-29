@@ -1,6 +1,6 @@
 import { Sparkles, BarChart3, Users, FileText, Calendar } from "lucide-react";
-import { Button } from "./components/ui/button";
-import GuidedTour from "./components/demo/GuidedTour";
+import { Button } from "../../components/ui/button";
+import GuidedTour from "../../components/demo/GuidedTour";
 
 export default function DemoWelcome() {
   return (

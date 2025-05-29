@@ -1,4 +1,4 @@
-import { useAuth } from "./lib/auth-provider";
+import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -20,9 +20,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "./components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
-import { Button } from "./components/ui/button";
+} from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Button } from "../components/ui/button";
 import {
   Download,
   Loader2,
@@ -31,10 +31,10 @@ import {
   Users,
   PieChart as PieChartIcon,
 } from "lucide-react";
-import { Badge } from "./components/ui/badge";
-import { Separator } from "./components/ui/separator";
-import VeniceInsights from "./components/dashboard/VeniceInsights";
-import { VeniceAIPrompt } from "./components/dashboard/VeniceAIPrompt";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
+import VeniceInsights from "../components/dashboard/VeniceInsights";
+import { VeniceAIPrompt } from "../components/dashboard/VeniceAIPrompt";
 
 // Custom colors for charts
 const COLORS = [

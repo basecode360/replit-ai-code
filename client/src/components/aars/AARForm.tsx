@@ -3,13 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
-import { apiRequest } from "./lib/queryClient";
-import { queryClient } from "./lib/queryClient";
-import { useToast } from "./hooks/use-toast";
-import { useAuth } from "./lib/auth-provider";
-import { useHierarchy } from "./hooks/use-hierarchy";
+import { apiRequest } from "../../lib/queryClient";
+import { queryClient } from "../../lib/queryClient";
+import { useToast } from "../../hooks/use-toast";
+import { useAuth } from "../../lib/auth-provider";
+import { useHierarchy } from "../../hooks/use-hierarchy";
 
-import { Button } from "./components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,26 +17,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
-import { Textarea } from "./components/ui/textarea";
-import { Input } from "./components/ui/input";
+} from "../../components/ui/form";
+import { Textarea } from "../../components/ui/textarea";
+import { Input } from "../../components/ui/input";
 import {
   Card,
   CardContent,
   CardHeader,
   CardFooter,
-} from "./components/ui/card";
+} from "../../components/ui/card";
 import { X, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Checkbox } from "./components/ui/checkbox";
+import { Checkbox } from "../../components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { MilitaryRoles } from "../../../shared/schema"
+} from "../../components/ui/select";
+import { MilitaryRoles } from "../../../../shared/schema"
 
 // Form schema for AAR submission
 const aarFormSchema = z.object({

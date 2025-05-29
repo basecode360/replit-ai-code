@@ -1,4 +1,4 @@
-import { useAuth } from "./lib/auth-provider";
+import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -11,15 +11,15 @@ import {
   AlertTriangle,
   RefreshCw,
 } from "lucide-react";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "./components/ui/card";
+} from "../components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./components/ui/table";
+} from "../components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -36,15 +36,15 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "./components/ui/pagination";
+} from "../components/ui/pagination";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { Badge } from "./components/ui/badge";
+} from "../components/ui/select";
+import { Badge } from "../components/ui/badge";
 
 export default function SecurityLogs() {
   const { user } = useAuth();

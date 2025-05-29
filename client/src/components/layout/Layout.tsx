@@ -1,3 +1,5 @@
+import React from "react";
+
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -17,9 +19,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main content */}
       <div className="flex flex-col flex-1 md:pl-64">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-background">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto bg-background">{children}</main>
       </div>
     </div>
   );

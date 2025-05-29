@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useHierarchy } from "./hooks/use-hierarchy";
-import { useAuth } from "./lib/auth-provider";
+import { useHierarchy } from "../hooks/use-hierarchy";
+import { useAuth } from "../lib/auth-provider";
 import { Link } from "wouter";
-import { useToast } from "./hooks/use-toast";
+import { useToast } from "../hooks/use-toast";
 
 // Interface for AAR items with metadata
 interface AARItem {
@@ -24,26 +24,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+} from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./components/ui/accordion";
+} from "../components/ui/accordion";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { Button } from "./components/ui/button";
-import { Badge } from "./components/ui/badge";
-import { Skeleton } from "./components/ui/skeleton";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
+} from "../components/ui/select";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Skeleton } from "../components/ui/skeleton";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import {
   Clipboard,
   ClipboardCheck,

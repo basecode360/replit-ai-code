@@ -6,16 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "./components/ui/dialog";
+} from "../components/ui/dialog";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
-import { Badge } from "./components/ui/badge";
-import { Button } from "./components/ui/button";
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 import {
   Loader2,
   CheckCircle,

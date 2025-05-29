@@ -1,7 +1,9 @@
-import { Card, CardHeader, CardContent } from "./components/ui/card";
+import React from "react";
+
+import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { Link } from "wouter";
 import { Calendar, MapPin, Users } from "lucide-react";
-import { Badge } from "./components/ui/badge";
+import { Badge } from "../../components/ui/badge";
 import { format } from "date-fns";
 
 export interface RecentAAR {
