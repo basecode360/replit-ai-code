@@ -5,7 +5,7 @@ export default function CreateEvent() {
   return (
     <>
       <Helmet>
-        <title>Create Training Event - Military AAR Management System</title>
+        <title>Create Training Event - Venice AI System</title>
         <meta
           name="description"
           content="Create a new training event in the 8-step military training model and assign participants."

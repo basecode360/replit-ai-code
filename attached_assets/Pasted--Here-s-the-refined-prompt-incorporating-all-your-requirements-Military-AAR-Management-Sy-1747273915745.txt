@@ -5,7 +5,7 @@ Here's the refined prompt incorporating all your requirements:
 
 ---
 
-**Military AAR Management System Prompt for Replit**
+**Venice AI System Prompt for Replit**
 
 "Build a secure military After-Action Review (AAR) management system with these specifications:
 

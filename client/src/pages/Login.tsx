@@ -1,12 +1,12 @@
 import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
-import { useAuth } from "./lib/auth-provider";
+import { useAuth } from "../lib/auth-provider";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import AuthWrapper from "./components/auth/AuthWrapper";
-import { Button } from "./components/ui/button";
+import AuthWrapper from "../components/auth/AuthWrapper";
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,16 +14,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
-import { Input } from "./components/ui/input";
+} from "../components/ui/form";
+import { Input } from "../components/ui/input";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "./components/ui/card";
+} from "../components/ui/card";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "./components/ui/alert";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import { Link } from "wouter";
 
 const loginSchema = z.object({
@@ -70,7 +70,7 @@ export default function Login() {
   return (
     <>
       <Helmet>
-        <title>Login - Military AAR Management System</title>
+        <title>Login - Venice AI System</title>
         <meta
           name="description"
           content="Log in to the Military After-Action Review Management System to access training events, submit AARs, and view analytics."

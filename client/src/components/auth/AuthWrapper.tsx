@@ -10,7 +10,7 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-muted/50 to-muted p-4">
       <div className="absolute top-0 left-0 w-full p-4">
         <h1 className="text-2xl font-condensed font-bold text-primary">
-          MILITARY AAR MANAGEMENT SYSTEM
+          Venice AI System
         </h1>
       </div>
 

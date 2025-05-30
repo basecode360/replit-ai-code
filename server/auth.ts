@@ -25,7 +25,7 @@ export function setupAuth(app: Express) {
         secure: false, // Set to false for both development and production in Replit
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         httpOnly: true,
-        sameSite: "none", // Allow cross-site cookies for Replit's environment
+        sameSite: "lax", // Allow cross-site cookies for Replit's environment
       },
       store: storage.sessionStore,
     })
@@ -33,7 +33,15 @@ export function setupAuth(app: Express) {
 
   app.use(passport.initialize());
   app.use(passport.session());
-
+  app.use((req, res, next) => {
+    console.log("Session Debug:", {
+      sessionID: req.sessionID,
+      isAuthenticated: req.isAuthenticated(),
+      user: req.user ? req.user  : "none",
+      cookies: req.headers.cookie,
+    });
+    next();
+  });
   // Configure passport authentication
   passport.use(
     new LocalStrategy(async (username, password, done) => {

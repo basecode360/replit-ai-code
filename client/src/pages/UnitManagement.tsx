@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../hooks/use-toast";
-import { Unit, User, UnitLevels, insertUnitSchema } from "../../../shared/schema"
+import {
+  Unit,
+  User,
+  UnitLevels,
+  insertUnitSchema,
+} from "../../../shared/schema";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { useHierarchy } from "../hooks/use-hierarchy";
 import { useAuth } from "../lib/auth-provider";
@@ -29,7 +34,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import {
@@ -316,7 +326,7 @@ export default function UnitManagement() {
   return (
     <>
       <Helmet>
-        <title>Unit Management | Military AAR System</title>
+        <title>Unit Management | Venice AI</title>
         <meta
           name="description"
           content="Manage military units and their hierarchical structure"
