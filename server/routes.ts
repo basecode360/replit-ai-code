@@ -50,7 +50,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const allowedOrigins = [
       "http://localhost:5000",
       "http://localhost:5173", // Vite dev server
-      "https://greenbook-demo.netlify.app/"
+      "https://greenbook-demo.netlify.app/",
+      "https://replit-ai-code.vercel.app/",
     ];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
