@@ -70,7 +70,7 @@ export default function Login() {
   return (
     <>
       <Helmet>
-        <title>Login - Venice AI System</title>
+        <title>Login - GreenBook System</title>
         <meta
           name="description"
           content="Log in to the Military After-Action Review Management System to access training events, submit AARs, and view analytics."

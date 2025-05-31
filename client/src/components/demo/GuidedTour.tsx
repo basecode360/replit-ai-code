@@ -17,7 +17,7 @@ const tourSteps = [
     id: 1,
     name: "Welcome",
     path: "/demo",
-    description: "Introduction to the Venice AI Training Management System",
+    description: "Introduction to the GreenBook Training Management System",
     highlightId: null,
   },
   {

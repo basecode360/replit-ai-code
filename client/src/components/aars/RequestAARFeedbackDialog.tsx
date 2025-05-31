@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
@@ -13,7 +14,12 @@ import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Switch } from "../../components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { toast } from "../../hooks/use-toast";
 import {

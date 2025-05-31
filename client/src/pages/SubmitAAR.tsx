@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams } from "wouter";
 import { Helmet } from "react-helmet";
 import AARForm from "../components/aars/AARForm";
@@ -9,7 +10,7 @@ export default function SubmitAAR() {
   return (
     <>
       <Helmet>
-        <title>Submit AAR - Venice AI System</title>
+        <title>Submit AAR - GreenBook System</title>
         <meta
           name="description"
           content="Submit an After-Action Review (AAR) for a completed training event to document lessons learned and improvement opportunities."

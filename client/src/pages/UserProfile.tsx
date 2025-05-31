@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";

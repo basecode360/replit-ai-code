@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +28,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../lib/queryClient";

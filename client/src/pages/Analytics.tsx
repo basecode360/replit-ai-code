@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -21,7 +22,12 @@ import {
   CardTitle,
   CardDescription,
 } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Button } from "../components/ui/button";
 import {
   Download,
@@ -160,7 +166,7 @@ export default function Analytics() {
         <TabsList className="mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
-          <TabsTrigger value="venice">Venice AI Analysis</TabsTrigger>
+          <TabsTrigger value="venice">GreenBook Analysis</TabsTrigger>
         </TabsList>
 
         {isLoading ? (
@@ -565,7 +571,7 @@ export default function Analytics() {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Venice AI Recommendations</CardTitle>
+                        <CardTitle>GreenBook Recommendations</CardTitle>
                         <CardDescription>
                           Actionable steps based on analysis of all AARs
                         </CardDescription>
@@ -600,10 +606,10 @@ export default function Analytics() {
                     <CardContent className="flex flex-col items-center justify-center p-12">
                       <PieChartIcon className="h-12 w-12 text-muted-foreground/40 mb-4" />
                       <h3 className="text-lg font-medium mb-2">
-                        Venice AI Analysis Unavailable
+                        GreenBook Analysis Unavailable
                       </h3>
                       <p className="text-muted-foreground text-center max-w-md">
-                        Venice AI automatic analysis is not available at this
+                        GreenBook automatic analysis is not available at this
                         time. This could be due to insufficient AAR data or a
                         temporary system issue. However, you can still use the
                         prompt feature above to ask specific questions about

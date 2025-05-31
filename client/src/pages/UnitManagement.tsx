@@ -326,7 +326,7 @@ export default function UnitManagement() {
   return (
     <>
       <Helmet>
-        <title>Unit Management | Venice AI</title>
+        <title>Unit Management | GreenBook</title>
         <meta
           name="description"
           content="Manage military units and their hierarchical structure"

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Sparkles, Send, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import {

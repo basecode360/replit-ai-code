@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -27,7 +28,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { TrainingSteps } from "../../../shared/schema"
+import { TrainingSteps } from "../../../shared/schema";
 import { Separator } from "../components/ui/separator";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { Event, Unit, User } from "@shared/schema";

@@ -1,4 +1,5 @@
-import { useAuth } from "../lib/auth-provider"
+import React from "react";
+import { useAuth } from "../lib/auth-provider";
 import UserChainOfCommand from "../components/users/UserChainOfCommand";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,7 +31,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { useTheme } from "../components/ui/theme-provider";
 import { AlertCircle, Check } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
@@ -492,7 +498,7 @@ export default function Settings() {
 
                   <div className="flex items-center justify-between">
                     <div className="text-sm">
-                      Venice AI insights and recommendations
+                      GreenBook insights and recommendations
                     </div>
                     <Switch defaultChecked disabled={!notificationsEnabled} />
                   </div>

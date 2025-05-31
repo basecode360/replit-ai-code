@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Link } from "wouter";
 import {
@@ -274,8 +275,8 @@ export default function DemoSignup() {
                   answer="Our standard service agreement is for 12 months, but we offer flexible terms for different organizational needs. Contact our sales team to discuss options for your specific requirements."
                 />
                 <FaqItem
-                  question="Can we customize Venice AI for our specific needs?"
-                  answer="Yes, Venice AI supports extensive customization, especially at the Company and Battalion levels. We can tailor the system to match your unit's specific training doctrine, reporting requirements, and hierarchy."
+                  question="Can we customize GreenBook for our specific needs?"
+                  answer="Yes, GreenBook supports extensive customization, especially at the Company and Battalion levels. We can tailor the system to match your unit's specific training doctrine, reporting requirements, and hierarchy."
                 />
                 <FaqItem
                   question="How does the training transfer feature work?"

@@ -209,7 +209,7 @@ export default function AuthPage() {
             <CardHeader className="space-y-1">
               <div className="flex items-center gap-2">
                 <Shield className="h-6 w-6 text-primary" />
-                <CardTitle className="text-2xl">Venice AI</CardTitle>
+                <CardTitle className="text-2xl">GreenBook</CardTitle>
               </div>
               <CardDescription>
                 Enter your credentials to access the secure After-Action Review
@@ -628,7 +628,7 @@ export default function AuthPage() {
         <div className="flex-1 w-full bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-8 flex flex-col justify-center">
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold">Venice AI System</h2>
+              <h2 className="text-3xl font-bold">GreenBook System</h2>
               <p className="text-muted-foreground">
                 A comprehensive solution for managing and analyzing After-Action
                 Reviews

@@ -1,3 +1,4 @@
+import React from "react";  
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { trainingStepInfo } from "../../lib/types";
 import { cn } from "../../lib/utils";

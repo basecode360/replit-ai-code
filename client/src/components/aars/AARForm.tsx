@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { MilitaryRoles } from "../../../../shared/schema"
+import { MilitaryRoles } from "../../../../shared/schema";
 
 // Form schema for AAR submission
 const aarFormSchema = z.object({

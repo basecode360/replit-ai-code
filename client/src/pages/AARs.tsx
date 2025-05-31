@@ -1,4 +1,5 @@
-import { useAuth } from "./lib/auth-provider";
+import React from "react";
+import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -12,8 +13,8 @@ import {
   Search,
 } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import {
   Card,
   CardContent,
@@ -21,7 +22,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "./components/ui/card";
+} from "../components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,8 +30,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
-import { Badge } from "./components/ui/badge";
+} from "../components/ui/dropdown-menu";
+import { Badge } from "../components/ui/badge";
 import { useState } from "react";
 
 export default function AARs() {

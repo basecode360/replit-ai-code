@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useHierarchy } from "../hooks/use-hierarchy";
@@ -25,7 +26,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Accordion,
   AccordionContent,

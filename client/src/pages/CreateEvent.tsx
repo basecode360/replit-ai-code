@@ -1,3 +1,4 @@
+import React from "react";
 import { Helmet } from "react-helmet";
 import EventForm from "../components/events/EventForm";
 
@@ -5,7 +6,7 @@ export default function CreateEvent() {
   return (
     <>
       <Helmet>
-        <title>Create Training Event - Venice AI System</title>
+        <title>Create Training Event - GreenBook System</title>
         <meta
           name="description"
           content="Create a new training event in the 8-step military training model and assign participants."

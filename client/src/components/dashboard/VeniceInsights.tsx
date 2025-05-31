@@ -26,7 +26,7 @@ export default function VeniceInsights({ analysis }: VeniceInsightsProps) {
     <Card>
       <CardHeader className="border-b border-border pb-3">
         <h3 className="text-lg font-medium text-gray-900">
-          Venice AI Insights
+          GreenBook Insights
         </h3>
         <p className="mt-1 text-sm text-gray-500">
           Based on analysis of recent AARs

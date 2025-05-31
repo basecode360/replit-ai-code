@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from "../lib/auth-provider";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
@@ -22,7 +23,12 @@ import {
   CardFooter,
 } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import { Skeleton } from "../components/ui/skeleton";
 

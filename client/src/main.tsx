@@ -12,6 +12,6 @@ fontLink.href =
 document.head.appendChild(fontLink);
 
 // Set document title
-document.title = "Venice AI System";
+document.title = "GreenBook System";
 
 createRoot(document.getElementById("root")!).render(<App />);
