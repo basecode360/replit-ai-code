@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useAuth } from "../lib/auth-provider";
-import { LoginCredentials, RegisterData } from "../lib/auth-service";
+import { useAuth } from "@/lib/auth-provider";
+import { LoginCredentials, RegisterData } from "@/lib/auth-service";
 import { useLocation, Link } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -15,8 +15,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -25,31 +25,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../components/ui/tabs";
-import { Separator } from "../components/ui/separator";
-import { Switch } from "../components/ui/switch";
-import {
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import {
-  Shield,
-  ChevronRight,
-  User,
-  Key,
-  UserPlus,
-  Loader2,
-} from "lucide-react";
+  SelectValue 
+} from "@/components/ui/select";
+import { Shield, ChevronRight, User, Key, UserPlus, Loader2 } from "lucide-react";
 
 // Schema for login form
 const loginSchema = z.object({
@@ -58,39 +46,36 @@ const loginSchema = z.object({
 });
 
 // Schema for registration form with extended validation
-const registerSchema = z
-  .object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    name: z.string().min(1, "Full name is required"),
-    rank: z.string().min(1, "Military rank is required"),
-    role: z.string().min(1, "Military role is required"),
-    referralCode: z.string().optional(),
-    bio: z.string().optional(),
-    // Optional fields for creating a new unit (when no referral code is provided)
-    createNewUnit: z.boolean().optional(),
-    unitName: z.string().optional(),
-    unitLevel: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  })
-  .refine(
-    (data) => {
-      // If creating a new unit, unitName and unitLevel are required
-      if (data.createNewUnit) {
-        return !!data.unitName && !!data.unitLevel;
-      }
-      // If not creating a new unit, referralCode is required
-      return !!data.referralCode;
-    },
-    {
-      message: "Either a referral code or new unit information is required",
-      path: ["referralCode"],
+const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  name: z.string().min(1, "Full name is required"),
+  rank: z.string().min(1, "Military rank is required"),
+  role: z.string().min(1, "Military role is required"),
+  referralCode: z.string().optional(),
+  bio: z.string().optional(),
+  // Optional fields for creating a new unit (when no referral code is provided)
+  createNewUnit: z.boolean().optional(),
+  unitName: z.string().optional(),
+  unitLevel: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+}).refine(
+  (data) => {
+    // If creating a new unit, unitName and unitLevel are required
+    if (data.createNewUnit) {
+      return !!data.unitName && !!data.unitLevel;
     }
-  );
+    // If not creating a new unit, referralCode is required
+    return !!data.referralCode;
+  },
+  {
+    message: "Either a referral code or new unit information is required",
+    path: ["referralCode"],
+  }
+);
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -99,7 +84,7 @@ export default function AuthPage() {
   const { user, isLoading, login, register } = useAuth();
   const [location, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
-
+  
   // Use state to track loading status for login and registration
   const [isLoginPending, setIsLoginPending] = useState(false);
   const [isRegisterPending, setIsRegisterPending] = useState(false);
@@ -144,7 +129,7 @@ export default function AuthPage() {
       setIsLoginPending(true);
       const success = await login(values.username, values.password);
       console.log("Login attempt result:", success);
-
+      
       if (success) {
         console.log("Login successful, navigating to dashboard");
         // Force navigation after a brief delay
@@ -163,26 +148,25 @@ export default function AuthPage() {
   const onRegisterSubmit = async (values: RegisterFormValues) => {
     try {
       setIsRegisterPending(true);
-
+      
       // Remove confirmPassword as it's not in the API model
       const { confirmPassword, ...registerData } = values;
-
+      
       // If not creating a new unit, ensure unit fields aren't sent
       if (!values.createNewUnit) {
         // Remove unit creation fields when using referral code
-        const { unitName, unitLevel, createNewUnit, ...referralData } =
-          registerData;
+        const { unitName, unitLevel, createNewUnit, ...referralData } = registerData;
         await register(referralData);
       } else {
         // When creating a new unit, ensure referralCode is not sent
         const { referralCode, ...unitCreationData } = registerData;
-
+        
         // Set the user's role to admin/commander when creating a new unit
         const leaderData = {
           ...unitCreationData,
-          role: unitCreationData.role || "Commander", // Default to Commander if no role specified
+          role: unitCreationData.role || 'Commander' // Default to Commander if no role specified
         };
-
+        
         await register(leaderData);
       }
     } catch (error) {
@@ -212,42 +196,32 @@ export default function AuthPage() {
                 <CardTitle className="text-2xl">GreenBook</CardTitle>
               </div>
               <CardDescription>
-                Enter your credentials to access the secure After-Action Review
-                system
+                Enter your credentials to access the secure After-Action Review system
               </CardDescription>
             </CardHeader>
             <CardContent className="pb-4">
-              <Tabs
-                defaultValue="login"
-                value={activeTab}
+              <Tabs 
+                defaultValue="login" 
+                value={activeTab} 
                 onValueChange={setActiveTab}
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger
-                    value="login"
-                    className="flex items-center gap-2"
-                  >
+                  <TabsTrigger value="login" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>Login</span>
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="register"
-                    className="flex items-center gap-2"
-                  >
+                  <TabsTrigger value="register" className="flex items-center gap-2">
                     <UserPlus className="h-4 w-4" />
                     <span>Register</span>
                   </TabsTrigger>
                 </TabsList>
-
+                
                 {/* Login Form */}
                 <TabsContent value="login">
                   <div className="space-y-4 py-2">
                     <Form {...loginForm}>
-                      <form
-                        onSubmit={loginForm.handleSubmit(onLoginSubmit)}
-                        className="space-y-4"
-                      >
+                      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                         <FormField
                           control={loginForm.control}
                           name="username"
@@ -255,10 +229,7 @@ export default function AuthPage() {
                             <FormItem>
                               <FormLabel>Username</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Enter your username"
-                                  {...field}
-                                />
+                                <Input placeholder="Enter your username" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -271,19 +242,15 @@ export default function AuthPage() {
                             <FormItem>
                               <FormLabel>Password</FormLabel>
                               <FormControl>
-                                <Input
-                                  type="password"
-                                  placeholder="Enter your password"
-                                  {...field}
-                                />
+                                <Input type="password" placeholder="Enter your password" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                        <Button
-                          type="submit"
-                          className="w-full"
+                        <Button 
+                          type="submit" 
+                          className="w-full" 
                           disabled={isLoginPending}
                         >
                           {isLoginPending ? (
@@ -300,24 +267,24 @@ export default function AuthPage() {
                         </Button>
                       </form>
                     </Form>
-
+                    
                     <div className="text-center space-y-2">
                       <div className="text-sm text-muted-foreground">
                         Don't have an account?
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button
-                          variant="ghost"
-                          className="text-sm"
+                        <Button 
+                          variant="ghost" 
+                          className="text-sm" 
                           onClick={() => setActiveTab("register")}
                         >
                           Create an account
                           <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="link"
+                        <Button 
+                          variant="link" 
                           className="text-sm text-primary p-0 h-auto"
-                          onClick={() => (window.location.href = "/demo")}
+                          onClick={() => window.location.href = "/demo"}
                         >
                           Try our interactive demo first
                         </Button>
@@ -325,15 +292,12 @@ export default function AuthPage() {
                     </div>
                   </div>
                 </TabsContent>
-
+                
                 {/* Register Form */}
                 <TabsContent value="register">
                   <div className="space-y-4 py-2">
                     <Form {...registerForm}>
-                      <form
-                        onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
-                        className="space-y-4"
-                      >
+                      <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <FormField
                             control={registerForm.control}
@@ -342,10 +306,7 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Username</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="Choose a username"
-                                    {...field}
-                                  />
+                                  <Input placeholder="Choose a username" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -358,17 +319,14 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Full Name</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="Enter your full name"
-                                    {...field}
-                                  />
+                                  <Input placeholder="Enter your full name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
                         </div>
-
+                        
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <FormField
                             control={registerForm.control}
@@ -377,10 +335,10 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    type="password"
-                                    placeholder="Choose a secure password"
-                                    {...field}
+                                  <Input 
+                                    type="password" 
+                                    placeholder="Choose a secure password" 
+                                    {...field} 
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -394,10 +352,10 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Confirm Password</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    type="password"
-                                    placeholder="Confirm your password"
-                                    {...field}
+                                  <Input 
+                                    type="password" 
+                                    placeholder="Confirm your password" 
+                                    {...field} 
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -405,7 +363,7 @@ export default function AuthPage() {
                             )}
                           />
                         </div>
-
+                        
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <FormField
                             control={registerForm.control}
@@ -414,10 +372,7 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Military Rank</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="E.g. Captain, Sergeant"
-                                    {...field}
-                                  />
+                                  <Input placeholder="E.g. Captain, Sergeant" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -430,17 +385,14 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Military Role</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="E.g. Squad Leader"
-                                    {...field}
-                                  />
+                                  <Input placeholder="E.g. Squad Leader" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
                         </div>
-
+                        
                         <div className="space-y-4">
                           <FormField
                             control={registerForm.control}
@@ -450,8 +402,7 @@ export default function AuthPage() {
                                 <div className="space-y-0.5">
                                   <FormLabel>Create New Unit</FormLabel>
                                   <FormDescription>
-                                    Toggle this if you want to create a new unit
-                                    instead of joining an existing one
+                                    Toggle this if you want to create a new unit instead of joining an existing one
                                   </FormDescription>
                                 </div>
                                 <FormControl>
@@ -461,10 +412,7 @@ export default function AuthPage() {
                                       field.onChange(checked);
                                       // Clear referral code or unit fields based on selection
                                       if (checked) {
-                                        registerForm.setValue(
-                                          "referralCode",
-                                          ""
-                                        );
+                                        registerForm.setValue("referralCode", "");
                                       } else {
                                         registerForm.setValue("unitName", "");
                                         registerForm.setValue("unitLevel", "");
@@ -485,14 +433,13 @@ export default function AuthPage() {
                                 <FormItem>
                                   <FormLabel>Unit Referral Code</FormLabel>
                                   <FormControl>
-                                    <Input
+                                    <Input 
                                       placeholder="Enter your unit's referral code"
-                                      {...field}
+                                      {...field} 
                                     />
                                   </FormControl>
                                   <FormDescription>
-                                    Ask your superior for your unit's referral
-                                    code
+                                    Ask your superior for your unit's referral code
                                   </FormDescription>
                                   <FormMessage />
                                 </FormItem>
@@ -500,9 +447,7 @@ export default function AuthPage() {
                             />
                           ) : (
                             <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
-                              <h3 className="text-sm font-medium">
-                                New Unit Information
-                              </h3>
+                              <h3 className="text-sm font-medium">New Unit Information</h3>
                               <FormField
                                 control={registerForm.control}
                                 name="unitName"
@@ -510,9 +455,9 @@ export default function AuthPage() {
                                   <FormItem>
                                     <FormLabel>Unit Name</FormLabel>
                                     <FormControl>
-                                      <Input
+                                      <Input 
                                         placeholder="Enter name for your new unit"
-                                        {...field}
+                                        {...field} 
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -535,29 +480,16 @@ export default function AuthPage() {
                                         </SelectTrigger>
                                       </FormControl>
                                       <SelectContent>
-                                        <SelectItem value="Squad">
-                                          Squad
-                                        </SelectItem>
-                                        <SelectItem value="Platoon">
-                                          Platoon
-                                        </SelectItem>
-                                        <SelectItem value="Company">
-                                          Company
-                                        </SelectItem>
-                                        <SelectItem value="Battalion">
-                                          Battalion
-                                        </SelectItem>
-                                        <SelectItem value="Brigade">
-                                          Brigade
-                                        </SelectItem>
-                                        <SelectItem value="Division">
-                                          Division
-                                        </SelectItem>
+                                        <SelectItem value="Squad">Squad</SelectItem>
+                                        <SelectItem value="Platoon">Platoon</SelectItem>
+                                        <SelectItem value="Company">Company</SelectItem>
+                                        <SelectItem value="Battalion">Battalion</SelectItem>
+                                        <SelectItem value="Brigade">Brigade</SelectItem>
+                                        <SelectItem value="Division">Division</SelectItem>
                                       </SelectContent>
                                     </Select>
                                     <FormDescription>
-                                      You will be designated as the leader of
-                                      this unit
+                                      You will be designated as the leader of this unit
                                     </FormDescription>
                                     <FormMessage />
                                   </FormItem>
@@ -566,7 +498,7 @@ export default function AuthPage() {
                             </div>
                           )}
                         </div>
-
+                        
                         <FormField
                           control={registerForm.control}
                           name="bio"
@@ -574,18 +506,18 @@ export default function AuthPage() {
                             <FormItem>
                               <FormLabel>Bio (Optional)</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Brief description of your military background"
-                                  {...field}
+                                <Input 
+                                  placeholder="Brief description of your military background" 
+                                  {...field} 
                                 />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-
-                        <Button
-                          type="submit"
+                        
+                        <Button 
+                          type="submit" 
                           className="w-full"
                           disabled={isRegisterPending}
                         >
@@ -603,14 +535,14 @@ export default function AuthPage() {
                         </Button>
                       </form>
                     </Form>
-
+                    
                     <div className="text-center space-y-2">
                       <div className="text-sm text-muted-foreground">
                         Already have an account?
                       </div>
-                      <Button
-                        variant="ghost"
-                        className="text-sm"
+                      <Button 
+                        variant="ghost" 
+                        className="text-sm" 
                         onClick={() => setActiveTab("login")}
                       >
                         Login to your account
@@ -623,20 +555,19 @@ export default function AuthPage() {
             </CardContent>
           </Card>
         </div>
-
+        
         {/* Right column: App information */}
         <div className="flex-1 w-full bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-8 flex flex-col justify-center">
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold">GreenBook System</h2>
+              <h2 className="text-3xl font-bold">Military AAR Management System</h2>
               <p className="text-muted-foreground">
-                A comprehensive solution for managing and analyzing After-Action
-                Reviews
+                A comprehensive solution for managing and analyzing After-Action Reviews
               </p>
             </div>
-
+            
             <Separator />
-
+            
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="rounded-full bg-primary/10 p-2 mt-0.5">
@@ -645,42 +576,38 @@ export default function AuthPage() {
                 <div>
                   <h3 className="font-semibold">Secure Military Information</h3>
                   <p className="text-sm text-muted-foreground">
-                    Field-level encryption for sensitive military data with
-                    hierarchical access controls
+                    Field-level encryption for sensitive military data with hierarchical access controls
                   </p>
                 </div>
               </div>
-
+              
               <div className="flex items-start gap-3">
                 <div className="rounded-full bg-primary/10 p-2 mt-0.5">
-                  <svg
-                    className="h-5 w-5 text-primary"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
+                  <svg 
+                    className="h-5 w-5 text-primary" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
                     strokeWidth="2"
                   >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold">
-                    Advanced GreenBookAAR Integration
-                  </h3>
+                  <h3 className="font-semibold">Advanced GreenBookAAR Integration</h3>
                   <p className="text-sm text-muted-foreground">
-                    Powerful AI-driven analysis of training data to identify
-                    trends and recommend improvements
+                    Powerful AI-driven analysis of training data to identify trends and recommend improvements
                   </p>
                 </div>
               </div>
-
+              
               <div className="flex items-start gap-3">
                 <div className="rounded-full bg-primary/10 p-2 mt-0.5">
-                  <svg
-                    className="h-5 w-5 text-primary"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
+                  <svg 
+                    className="h-5 w-5 text-primary" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
                     strokeWidth="2"
                   >
                     <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -689,19 +616,18 @@ export default function AuthPage() {
                 <div>
                   <h3 className="font-semibold">Comprehensive Unit Tracking</h3>
                   <p className="text-sm text-muted-foreground">
-                    Track and visualize training performance across all levels
-                    of military hierarchy
+                    Track and visualize training performance across all levels of military hierarchy
                   </p>
                 </div>
               </div>
-
+              
               <div className="flex items-start gap-3">
                 <div className="rounded-full bg-primary/10 p-2 mt-0.5">
-                  <svg
-                    className="h-5 w-5 text-primary"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
+                  <svg 
+                    className="h-5 w-5 text-primary" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
                     strokeWidth="2"
                   >
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
@@ -712,8 +638,7 @@ export default function AuthPage() {
                 <div>
                   <h3 className="font-semibold">Customizable AAR Templates</h3>
                   <p className="text-sm text-muted-foreground">
-                    Tailor AAR forms to specific training types with support for
-                    multimedia attachments
+                    Tailor AAR forms to specific training types with support for multimedia attachments
                   </p>
                 </div>
               </div>

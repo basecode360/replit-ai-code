@@ -3,7 +3,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { Badge } from "../../components/ui/badge";
-import { useToast } from "../../hooks/use-toast";
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 interface Notification {
@@ -34,7 +34,7 @@ export default function NotificationDropdown() {
 
   // Fetch notifications
   const { data: notifications = [], refetch } = useQuery({
-    queryKey: ["/api/notifications"],
+    queryKey: ['/api/notifications'],
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
@@ -51,17 +51,17 @@ export default function NotificationDropdown() {
       // Mark as read
       if (!notification.read) {
         await fetch(`/api/notifications/${notification.id}/mark-read`, {
-          method: "POST",
+          method: 'POST',
         });
         refetch();
       }
 
       // Navigate based on notification type
-      if (notification.type === "aar_request" && notification.relatedEntityId) {
+      if (notification.type === 'aar_request' && notification.relatedEntityId) {
         navigate(`/submit-aar/${notification.relatedEntityId}`);
       }
     } catch (error) {
-      console.error("Error handling notification click", error);
+      console.error('Error handling notification click', error);
       toast({
         title: "Error",
         description: "Failed to process notification",
@@ -73,15 +73,11 @@ export default function NotificationDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative text-muted-foreground"
-        >
+        <Button variant="ghost" size="icon" className="relative text-muted-foreground">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge
-              variant="destructive"
+            <Badge 
+              variant="destructive" 
               className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs min-w-[1.2rem] flex items-center justify-center"
             >
               {unreadCount}
@@ -90,20 +86,16 @@ export default function NotificationDropdown() {
           <span className="sr-only">Notifications</span>
         </Button>
       </DropdownMenuTrigger>
-
+      
       <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
-
-        {notifications &&
-        Array.isArray(notifications) &&
-        notifications.length > 0 ? (
+        
+        {notifications && Array.isArray(notifications) && notifications.length > 0 ? (
           notifications.map((notification: Notification) => (
-            <DropdownMenuItem
+            <DropdownMenuItem 
               key={notification.id}
-              className={`flex flex-col items-start p-3 cursor-pointer ${
-                notification.read ? "opacity-70" : "font-medium"
-              }`}
+              className={`flex flex-col items-start p-3 cursor-pointer ${notification.read ? 'opacity-70' : 'font-medium'}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex w-full justify-between">
@@ -112,9 +104,7 @@ export default function NotificationDropdown() {
                   <span className="h-2 w-2 rounded-full bg-blue-500"></span>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {notification.message}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
               <span className="text-xs text-muted-foreground mt-1">
                 {new Date(notification.createdAt).toLocaleString()}
               </span>

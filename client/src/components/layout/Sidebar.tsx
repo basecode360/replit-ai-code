@@ -1,9 +1,8 @@
 import React from "react";
 
 import { Link, useLocation } from "wouter";
-import { cn } from "../../lib/utils";
-
-import { useAuth } from "../../lib/auth-provider";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-provider";
 import {
   Home,
   Users,
@@ -19,8 +18,8 @@ import {
   ListX,
   FileX,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Separator } from "../../components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export function Sidebar() {
   const [location] = useLocation();
