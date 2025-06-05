@@ -222,7 +222,7 @@ export default function EventAARs() {
     <>
       <Helmet>
         <title>
-          After-Action Reviews for {event.title} - Military AAR Management
+          After-Action Reviews for {event.title} - GreenBookAAR Management
           System
         </title>
         <meta
